@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GeekGram</string>
+    <string name="button_test_1">TEST OF ELEVATION</string>
+    <string name="text_view_1">Hello World!</string>
 </resources>
