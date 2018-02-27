@@ -6,12 +6,21 @@
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
+
     </style>
+
     <style name="SecondTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColorYB</item>
         <item name="colorPrimaryDark">@color/primaryDarkColorYB</item>
         <item name="colorAccent">@color/secondaryColorYB</item>
     </style>
+
+    <style name="ButtonThemeOne" parent="Theme.AppCompat.CompactMenu">
+        <!-- Customize your theme here. -->
+        <item name="android:textColor">@color/primaryColorYB</item>
+        <item name="android:background">@color/secondaryColorYB</item>
+    </style>
+
 
 </resources>
