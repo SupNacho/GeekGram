@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setItemTextColor(new ColorStateList(states, colors));
         navigationView.setItemIconTintList(new ColorStateList(states, colors));
+        navigationView.setCheckedItem(R.id.nav_main);
     }
 
     @Override
