@@ -1,5 +1,6 @@
 package geekgram.supernacho.ru;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -16,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainFragment.OnFragmentInteractionListener {
@@ -104,18 +107,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_main:
-                Toast.makeText(this, "Main clicked", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_theme:
-                Intent themeIntent = new Intent(MainActivity.this, ThemeActivity.class);
-                startActivity(themeIntent);
-                break;
-            default:
-                Toast.makeText(this, "Menu Item not found", Toast.LENGTH_SHORT).show();
-        }
-
+//        switch (item.getItemId()) {
+//            case R.id.nav_main:
+//                Toast.makeText(this, "Main clicked", Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.nav_theme:
+//                Intent themeIntent = new Intent(MainActivity.this, ThemeActivity.class);
+//                startActivity(themeIntent);
+//                break;
+//            default:
+//                Toast.makeText(this, "Menu Item not found", Toast.LENGTH_SHORT).show();
+//        }
+        NavigationDrawerSwitch.switchIt(new WeakReference<Context>(this), item.getItemId());
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

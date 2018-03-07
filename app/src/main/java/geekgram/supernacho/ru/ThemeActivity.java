@@ -1,5 +1,6 @@
 package geekgram.supernacho.ru;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.lang.ref.WeakReference;
 
 public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -71,18 +74,7 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_main:
-                Intent themeIntent = new Intent(ThemeActivity.this, MainActivity.class);
-                startActivity(themeIntent);
-                break;
-            case R.id.nav_theme:
-                Toast.makeText(this, "Theme clicked", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(this, "Menu Item not found", Toast.LENGTH_SHORT).show();
-        }
-
+        NavigationDrawerSwitch.switchIt(new WeakReference<Context>(this), item.getItemId());
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
