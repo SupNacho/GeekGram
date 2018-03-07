@@ -14,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
 import java.lang.ref.WeakReference;
 
 public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -23,6 +26,8 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theme);
         initNavDrawer();
+        RefWatcher refWatcher = LeakCanary.install(this.getApplication());
+        refWatcher.watch(this);
     }
 
     private void initNavDrawer() {
