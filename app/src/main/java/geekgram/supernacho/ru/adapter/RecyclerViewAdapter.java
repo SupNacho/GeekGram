@@ -12,7 +12,7 @@ import java.util.List;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CardViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
 
     public RecyclerViewAdapter(List<PhotoModel> photos) {
@@ -20,22 +20,47 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public RecyclerViewAdapter.CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_one, null);
-        CardViewHolder cardViewHolder = new CardViewHolder(view);
-        return cardViewHolder;
+    public int getItemViewType(int position) {
+        return position % 5;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapter.CardViewHolder holder, int position) {
-        PhotoModel photoModel = photos.get(position);
-        if (photoModel.getPhotoSrc() != null) {
-            holder.imageView.setImageURI(photoModel.getPhotoSrc());
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        switch (viewType) {
+            case 0:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_two, null);
+                return new ViewCardTwo(view);
+            default:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_one, null);
+                return new ViewCardOne(view);
         }
-        if (photoModel.isFavorite()){
-            holder.favoritesButton.setImageResource(R.drawable.ic_favorites_on);
-        } else {
-            holder.favoritesButton.setImageResource(R.drawable.ic_favorites_off);
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        PhotoModel photoModel = photos.get(position);
+        switch (holder.getItemViewType()) {
+            case 0:
+                if (photoModel.getPhotoSrc() != null) {
+                    ((ViewCardTwo) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                }
+                if (photoModel.isFavorite()) {
+                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
+                } else {
+                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
+                }
+                break;
+            default:
+                if (photoModel.getPhotoSrc() != null) {
+                    ((ViewCardOne) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                }
+                if (photoModel.isFavorite()) {
+                    ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
+                } else {
+                    ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
+                }
+                break;
         }
     }
 
@@ -44,14 +69,36 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return photos.size();
     }
 
-    public static class CardViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public ImageButton favoritesButton;
+//    static class CardViewHolder extends RecyclerView.ViewHolder {
+//        ImageView imageView;
+//        ImageButton favoritesButton;
+//
+//        CardViewHolder(View itemView) {
+//            super(itemView);
+//            imageView = itemView.findViewById(R.id.image_view_cv);
+//            favoritesButton = itemView.findViewById(R.id.image_button_favorites);
+//        }
+//    }
 
-        public CardViewHolder(View itemView) {
+    class ViewCardOne extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        ImageButton favoritesButton;
+
+        ViewCardOne(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
+        }
+    }
+
+    class ViewCardTwo extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        ImageButton favoritesButton;
+
+        ViewCardTwo(View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.image_view_cv2);
+            favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
         }
     }
 }
