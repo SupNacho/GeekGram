@@ -12,7 +12,7 @@ import java.util.List;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private List<PhotoModel> photos;
 
     public RecyclerViewAdapter(List<PhotoModel> photos) {
@@ -21,7 +21,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        return position % 5;
+        return position % 3;
     }
 
     @Override
@@ -69,17 +69,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return photos.size();
     }
 
-//    static class CardViewHolder extends RecyclerView.ViewHolder {
-//        ImageView imageView;
-//        ImageButton favoritesButton;
-//
-//        CardViewHolder(View itemView) {
-//            super(itemView);
-//            imageView = itemView.findViewById(R.id.image_view_cv);
-//            favoritesButton = itemView.findViewById(R.id.image_button_favorites);
-//        }
-//    }
-
     class ViewCardOne extends RecyclerView.ViewHolder {
         ImageView imageView;
         ImageButton favoritesButton;
@@ -88,6 +77,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    removeItem(getLayoutPosition());
+                    return false;
+                }
+            });
         }
     }
 
@@ -95,10 +91,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ImageView imageView;
         ImageButton favoritesButton;
 
-        ViewCardTwo(View itemView) {
+        ViewCardTwo(final View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    removeItem(getLayoutPosition());
+                    return false;
+                }
+            });
         }
+    }
+    private void removeItem(final int pos) {
+        photos.remove(pos);
+        notifyDataSetChanged();
     }
 }
