@@ -52,7 +52,7 @@ public class MainFragment extends Fragment {
     private void initPhotosArray() {
         photos = new ArrayList<>();
         boolean isFav;
-        for (int i = 0; i < 200; i++){
+        for (int i = 0; i < 3; i++){
             if (i%3 == 0){
                 isFav = true;
             } else {
@@ -75,6 +75,7 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                photos.add(new PhotoModel(false, null));
                 Snackbar.make(view, "Add photo pressed", Snackbar.LENGTH_LONG)
                         .setAction("ADD", null).show();
             }
