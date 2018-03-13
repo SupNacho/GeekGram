@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 public class MainFragment extends Fragment {
 
+    public static final String IMG_URI = "img_uri";
+    public static final String IS_FAVORITE = "is_favorite";
     private OnFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private List<PhotoModel> photos;
@@ -89,9 +92,6 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                photos.add(new PhotoModel(false, null));
-//                Snackbar.make(view, "Add photo pressed", Snackbar.LENGTH_LONG)
-//                        .setAction("ADD", null).show();
                 try {
                     ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
                 } catch (IOException e){
@@ -102,8 +102,21 @@ public class MainFragment extends Fragment {
         );
     }
 
+    public void viewPhoto(int pos){
+        if (photos.get(pos).getPhotoSrc() != null) {
+            String imgUri = photos.get(pos).getPhotoSrc().toString();
+            Intent viewIntent = new Intent(getActivity(), FullscreenPhotoActivity.class);
+            viewIntent.putExtra(IMG_URI, imgUri);
+            viewIntent.putExtra(IS_FAVORITE, photos.get(pos).isFavorite());
+            startActivity(viewIntent);
+        } else {
+            Snackbar.make(fab, "No such photo", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
     public void addPhoto(Uri photoUri){
         photos.add(new PhotoModel(false, photoUri));
+        Snackbar.make(fab, "Photo added successfully", Snackbar.LENGTH_SHORT).show();
     }
 
     public void deletePhoto(final int pos){
