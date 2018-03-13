@@ -1,6 +1,8 @@
 package geekgram.supernacho.ru;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +26,10 @@ import geekgram.supernacho.ru.model.PhotoModel;
 public class MainFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    RecyclerView recyclerView;
-    List<PhotoModel> photos;
+    private RecyclerView recyclerView;
+    private List<PhotoModel> photos;
+    private RecyclerViewAdapter adapter;
+    private FloatingActionButton fab;
 
     public MainFragment() {
     }
@@ -69,9 +74,9 @@ public class MainFragment extends Fragment {
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(photos);
+        adapter = new RecyclerViewAdapter(photos, new WeakReference<>(this));
         recyclerView.setAdapter(adapter);
-        FloatingActionButton fab = view.findViewById(R.id.fab);
+        fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,6 +85,31 @@ public class MainFragment extends Fragment {
                         .setAction("ADD", null).show();
             }
         });
+    }
+
+    public void deletePhoto(final int pos){
+        final PhotoModel[] tempPhoto = new PhotoModel[1];
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert
+                .setMessage(R.string.alert_delete_msg)
+                .setCancelable(true)
+                .setNegativeButton(R.string.alert_negative_txt, null)
+                .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tempPhoto[0] = photos.remove(pos);
+                        adapter.notifyDataSetChanged();
+                        Snackbar.make(fab, "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                photos.add(pos, tempPhoto[0]);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }).show();
+                    }
+                })
+                .show();
+
     }
 
     public void onButtonPressed(Uri uri) {
@@ -104,7 +134,6 @@ public class MainFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
