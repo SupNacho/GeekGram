@@ -2,4 +2,9 @@
 <resources>
     <string name="nav_drawer_switch_theme">Switch Theme</string>
     <string name="nav_drawer_main">Main</string>
+    <string name="description_image_holder_cv_one">Image Holder CV One</string>
+    <string name="description_fav_image_button">Fav image button</string>
+    <string name="alert_delete_msg">Delete image?</string>
+    <string name="alert_negative_txt">No</string>
+    <string name="alert_positive_txt">Yes</string>
 </resources>

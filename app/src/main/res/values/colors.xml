@@ -17,4 +17,6 @@
     <color name="secondaryDarkColorYB">#12005e</color>
     <color name="primaryTextColorYB">#000000</color>
     <color name="secondaryTextColorYB">#ffffff</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

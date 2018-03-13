@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view_one"
+    android:layout_width="180dp"
+    android:layout_height="180dp"
+    app:cardBackgroundColor="@color/secondaryLightColor"
+    app:cardCornerRadius="16dp"
+    app:cardUseCompatPadding="true"
+    android:layout_margin="8dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/relative_layout_cv_two"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_view_cv2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_photo"
+            app:layout_constraintBottom_toBottomOf="@id/relative_layout_cv_two"
+            app:layout_constraintEnd_toEndOf="@id/relative_layout_cv_two"
+            app:layout_constraintStart_toStartOf="@id/relative_layout_cv_two"
+            app:layout_constraintTop_toTopOf="@id/relative_layout_cv_two"
+            android:contentDescription="@string/description_image_holder_cv_one"/>
+
+        <ImageButton
+            android:id="@+id/image_button_favorites_cv_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_favorites_on"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_cv2"
+            app:layout_constraintEnd_toEndOf="@id/image_view_cv2"
+            android:contentDescription="@string/description_fav_image_button"/>
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

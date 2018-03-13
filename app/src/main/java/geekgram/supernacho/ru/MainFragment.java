@@ -1,19 +1,47 @@
 package geekgram.supernacho.ru;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
+import geekgram.supernacho.ru.adapter.RecyclerViewAdapter;
+import geekgram.supernacho.ru.model.PhotoModel;
+
+import static android.app.Activity.RESULT_OK;
+import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
 public class MainFragment extends Fragment {
 
+    public static final String IMG_URI = "img_uri";
+    public static final String IS_FAVORITE = "is_favorite";
     private OnFragmentInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private List<PhotoModel> photos;
+    private RecyclerViewAdapter adapter;
+    private FloatingActionButton fab;
 
     public MainFragment() {
     }
@@ -33,22 +61,89 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        initPhotosArray();
         initUI(view);
         return view;
     }
 
+    private void initPhotosArray() {
+        photos = new ArrayList<>();
+        boolean isFav;
+        for (int i = 0; i < 3; i++){
+            if (i%3 == 0){
+                isFav = true;
+            } else {
+                isFav = false;
+            }
+            photos.add(new PhotoModel(isFav, null));
+        }
+    }
+
     private void initUI(View view) {
-        FloatingActionButton fab = view.findViewById(R.id.fab);
+        recyclerView = view.findViewById(R.id.main_fragment_recycler_view);
+        if (recyclerView != null){
+            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+            layoutManager.setOrientation(GridLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
+        }
+        adapter = new RecyclerViewAdapter(photos, new WeakReference<>(this));
+        recyclerView.setAdapter(adapter);
+        fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Add photo pressed", Snackbar.LENGTH_LONG)
-                        .setAction("ADD", null).show();
+                try {
+                    ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                } catch (IOException e){
+                    Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        }
+        );
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    public void viewPhoto(int pos){
+        if (photos.get(pos).getPhotoSrc() != null) {
+            String imgUri = photos.get(pos).getPhotoSrc().toString();
+            Intent viewIntent = new Intent(getActivity(), FullscreenPhotoActivity.class);
+            viewIntent.putExtra(IMG_URI, imgUri);
+            viewIntent.putExtra(IS_FAVORITE, photos.get(pos).isFavorite());
+            startActivity(viewIntent);
+        } else {
+            Snackbar.make(fab, "No such photo", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    public void addPhoto(Uri photoUri){
+        photos.add(new PhotoModel(false, photoUri));
+        Snackbar.make(fab, "Photo added successfully", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void deletePhoto(final int pos){
+        final PhotoModel[] tempPhoto = new PhotoModel[1];
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert
+                .setMessage(R.string.alert_delete_msg)
+                .setCancelable(true)
+                .setNegativeButton(R.string.alert_negative_txt, null)
+                .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tempPhoto[0] = photos.remove(pos);
+                        adapter.notifyDataSetChanged();
+                        Snackbar.make(fab, "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                photos.add(pos, tempPhoto[0]);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }).show();
+                    }
+                })
+                .show();
+
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -72,19 +167,7 @@ public class MainFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
