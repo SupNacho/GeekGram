@@ -17,6 +17,10 @@ public class PhotoModel {
         return isFavorite;
     }
 
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     public Uri getPhotoSrc() {
         return photoSrc;
     }
