@@ -104,6 +104,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     return false;
                 }
             });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mainFragment.viewPhoto(getLayoutPosition());
+                }
+            });
         }
     }
 
@@ -120,6 +126,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public boolean onLongClick(View view) {
                     mainFragment.deletePhoto(getLayoutPosition());
                     return false;
+                }
+            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mainFragment.viewPhoto(getLayoutPosition());
                 }
             });
         }
