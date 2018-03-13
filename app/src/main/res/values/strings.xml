@@ -20,4 +20,8 @@
     <string name="alert_delete_msg">Delete image?</string>
     <string name="alert_negative_txt">No</string>
     <string name="alert_positive_txt">Yes</string>
+
+    <string name="title_activity_fullscreen_photo">FullscreenPhotoActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
