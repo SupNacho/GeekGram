@@ -1,18 +1,26 @@
 package geekgram.supernacho.ru;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import static geekgram.supernacho.ru.MainFragment.IMG_URI;
+import static geekgram.supernacho.ru.MainFragment.IS_FAVORITE;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenPhotoActivity extends AppCompatActivity {
+public class FullscreenPhotoActivity extends AppCompatActivity implements View.OnClickListener {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -90,6 +98,10 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fullscreen_photo);
 
         mVisible = true;
+        initUI();
+    }
+
+    private void initUI() {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -105,7 +117,19 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.view_fav_button).setOnTouchListener(mDelayHideTouchListener);
+        Intent intent = getIntent();
+        String stringUri = intent.getStringExtra(IMG_URI);
+        boolean isFavorite = intent.getBooleanExtra(IS_FAVORITE, false);
+        Uri imgUri = Uri.parse(stringUri);
+        ImageView imgView = (ImageView) mContentView;
+        imgView.setImageURI(imgUri);
+        ImageButton favButton = findViewById(R.id.view_fav_button);
+        if (isFavorite) {
+            favButton.setImageResource(R.drawable.ic_favorites_on);
+        } else {
+            favButton.setImageResource(R.drawable.ic_favorites_off);
+        }
     }
 
     @Override
@@ -159,5 +183,16 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.view_fav_button:
+                // TODO: 13.03.2018 Установка и даление из избранных при просмотре
+                break;
+            default:
+                Toast.makeText(this, "No such button", Toast.LENGTH_SHORT).show();
+        }
     }
 }
