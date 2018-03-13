@@ -3,8 +3,12 @@ package geekgram.supernacho.ru;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,13 +18,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import geekgram.supernacho.ru.adapter.RecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
+
+import static android.app.Activity.RESULT_OK;
+import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
 public class MainFragment extends Fragment {
@@ -80,11 +89,21 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                photos.add(new PhotoModel(false, null));
-                Snackbar.make(view, "Add photo pressed", Snackbar.LENGTH_LONG)
-                        .setAction("ADD", null).show();
+//                photos.add(new PhotoModel(false, null));
+//                Snackbar.make(view, "Add photo pressed", Snackbar.LENGTH_LONG)
+//                        .setAction("ADD", null).show();
+                try {
+                    ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                } catch (IOException e){
+                    Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        }
+        );
+    }
+
+    public void addPhoto(Uri photoUri){
+        photos.add(new PhotoModel(false, photoUri));
     }
 
     public void deletePhoto(final int pos){
