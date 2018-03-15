@@ -9,15 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PhotoFragmentsAdaper extends FragmentPagerAdapter {
+public class PhotoFragmentsAdapter extends FragmentPagerAdapter {
     List<Fragment> fragments = new ArrayList<>();
     Map<Fragment, String> fragmentsTitle = new HashMap<>();
 
-    public PhotoFragmentsAdaper(FragmentManager fm) {
+    public PhotoFragmentsAdapter(FragmentManager fm) {
         super(fm);
     }
 
-    void addFragment(Fragment fragment, String title){
+    public void addFragment(Fragment fragment, String title){
         this.fragments.add(fragment);
         this.fragmentsTitle.put(fragment, title);
     }
@@ -32,10 +32,10 @@ public class PhotoFragmentsAdaper extends FragmentPagerAdapter {
         return fragments.size();
     }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        Fragment fr = fragments.get(position);
-        return fragmentsTitle.get(fr);
-    }
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        Fragment fr = fragments.get(position);
+//        return fragmentsTitle.get(fr);
+//    }
 }
 
