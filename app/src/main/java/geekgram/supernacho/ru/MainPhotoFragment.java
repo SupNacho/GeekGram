@@ -2,10 +2,16 @@ package geekgram.supernacho.ru;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 
 /**
@@ -23,20 +29,40 @@ public class MainPhotoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FrameLayout frameLayout;
+    private Fragment allPhotoFragment;
+    private Fragment dbFragment;
+    private Fragment netFragment;
+    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationSelectedListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_all:
+                            changeFragment(allPhotoFragment);
+                            return true;
+                        case R.id.navigation_db:
+                            changeFragment(dbFragment);
+                            return true;
+                        case R.id.navigation_net:
+                            changeFragment(netFragment);
+                            return true;
+                    }
+                    return false;
+                }
+            };
+
+    private void changeFragment(Fragment fragment) {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.containerFragment, fragment);
+        transaction.commit();
+    }
+
 
     public MainPhotoFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainPhotoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MainPhotoFragment newInstance(String param1, String param2) {
         MainPhotoFragment fragment = new MainPhotoFragment();
         Bundle args = new Bundle();
@@ -58,8 +84,20 @@ public class MainPhotoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_photo, container, false);
+        View view = inflater.inflate(R.layout.fragment_main_photo, container, false);
+
+        initFragments();
+        frameLayout = view.findViewById(R.id.containerFragment);
+        BottomNavigationView navigation = view.findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
+        navigation.setSelectedItemId(R.id.navigation_all);
+        return view;
+    }
+
+    private void initFragments() {
+        allPhotoFragment = AllPhotoFragment.newInstance();
+        dbFragment = DbFragment.newInstance(null, null);
+        netFragment = NetFragment.newInstance(null, null);
     }
 
 }
