@@ -2,8 +2,6 @@ package geekgram.supernacho.ru;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +9,11 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,12 +32,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainFragment.OnFragmentInteractionListener {
+import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 
-    private MainFragment mainFragment;
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
+
     public static final int CAMERA_CAPTURE = 1;
+
+    private AllPhotoFragment allPhotoFragment;
     private String currentPhotoPath;
+    private ViewPager viewPager;
+    private PhotoFragmentsAdapter photoFragmentsPageAdapter;
+    private Fragment mainFragment;
+    private Fragment favoriteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +52,38 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initNavDrawer();
         initFragment();
+        initPageAdapter();
+        initViewPager();
+        initTabLayout();
         RefWatcher refWatcher = LeakCanary.install(this.getApplication());
         refWatcher.watch(this);
     }
 
+    private void initTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
+    }
+
+    private void initViewPager() {
+        viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(photoFragmentsPageAdapter);
+    }
+
+    private void initPageAdapter() {
+        photoFragmentsPageAdapter = new PhotoFragmentsAdapter(getSupportFragmentManager());
+        photoFragmentsPageAdapter.addFragment(mainFragment, "Main");
+        photoFragmentsPageAdapter.addFragment(favoriteFragment, "Favorites");
+    }
+
     private void initFragment() {
-        mainFragment = MainFragment.newInstance();
-        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
-        fragmentManager.add(R.id.main_fragment_container, mainFragment);
-        fragmentManager.commit();
+        mainFragment = MainPhotoFragment.newInstance(null, null);
+        favoriteFragment = FavoritesFragment.newInstance(null, null);
+//        allPhotoFragment = AllPhotoFragment.newInstance();
+//        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
+//        fragmentManager.add(R.id.main_fragment_container, allPhotoFragment);
+//        fragmentManager.commit();
     }
 
     private void initNavDrawer() {
@@ -68,24 +98,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        //ДЗ пункт №3
-        int[][] states = new int[][]{
-                new int[]{-android.R.attr.state_enabled},
-                new int[]{-android.R.attr.state_checked},
-                new int[]{android.R.attr.state_checked},
-                new int[]{android.R.attr.state_pressed},
-                new int[]{android.R.attr.state_enabled}};
-        int[] colors = new int[]{
-                Color.MAGENTA,
-                Color.BLACK,
-                Color.RED,
-                Color.GREEN,
-                Color.BLUE};
-
-        navigationView.setItemTextColor(new ColorStateList(states, colors));
-        navigationView.setItemIconTintList(new ColorStateList(states, colors));
         navigationView.setCheckedItem(R.id.nav_main);
+
+
     }
 
     public void dispatchTakepictureIntent(int actionCode) throws IOException {
@@ -129,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
             Uri imageUri = Uri.parse(currentPhotoPath);
-            mainFragment.addPhoto(imageUri);
+            allPhotoFragment.addPhoto(imageUri);
             MediaScannerConnection.scanFile(MainActivity.this,
                     new String[]{imageUri.getPath()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
