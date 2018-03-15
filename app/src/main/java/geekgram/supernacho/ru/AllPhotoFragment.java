@@ -4,18 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +24,10 @@ import java.util.List;
 import geekgram.supernacho.ru.adapter.RecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-import static android.app.Activity.RESULT_OK;
 import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
-public class MainFragment extends Fragment {
+public class AllPhotoFragment extends Fragment {
 
     public static final String IMG_URI = "img_uri";
     public static final String IS_FAVORITE = "is_favorite";
@@ -43,12 +37,12 @@ public class MainFragment extends Fragment {
     private RecyclerViewAdapter adapter;
     private FloatingActionButton fab;
 
-    public MainFragment() {
+    public AllPhotoFragment() {
     }
 
 
-    public static MainFragment newInstance() {
-        MainFragment fragment = new MainFragment();
+    public static AllPhotoFragment newInstance() {
+        AllPhotoFragment fragment = new AllPhotoFragment();
         return fragment;
     }
 
