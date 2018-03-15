@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,20 +13,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
+import geekgram.supernacho.ru.adapter.PhotoInterface;
 import geekgram.supernacho.ru.adapter.RecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
-
-public class AllPhotoFragment extends Fragment {
+public class AllPhotoFragment extends Fragment implements PhotoInterface {
 
     public static final String IMG_URI = "img_uri";
     public static final String IS_FAVORITE = "is_favorite";
@@ -35,7 +30,6 @@ public class AllPhotoFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<PhotoModel> photos;
     private RecyclerViewAdapter adapter;
-    private FloatingActionButton fab;
 
     public AllPhotoFragment() {
     }
@@ -54,46 +48,34 @@ public class AllPhotoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_allphoto, container, false);
         initPhotosArray();
         initUI(view);
         return view;
     }
 
     private void initPhotosArray() {
-        photos = new ArrayList<>();
-        boolean isFav;
-        for (int i = 0; i < 3; i++){
-            if (i%3 == 0){
-                isFav = true;
-            } else {
-                isFav = false;
-            }
-            photos.add(new PhotoModel(isFav, null));
-        }
+        photos = ((MainActivity)getContext()).getPhotos();
+//        boolean isFav;
+//        for (int i = 0; i < 3; i++){
+//            if (i%3 == 0){
+//                isFav = true;
+//            } else {
+//                isFav = false;
+//            }
+//            photos.add(new PhotoModel(isFav, null));
+//        }
     }
 
     private void initUI(View view) {
-        recyclerView = view.findViewById(R.id.main_fragment_recycler_view);
+        recyclerView = view.findViewById(R.id.all_photo_fragment_recycler_view);
         if (recyclerView != null){
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
-        adapter = new RecyclerViewAdapter(photos, new WeakReference<>(this));
+        adapter = new RecyclerViewAdapter(((MainActivity)getContext()).getPhotos(), new WeakReference<PhotoInterface>(this));
         recyclerView.setAdapter(adapter);
-        fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
-                } catch (IOException e){
-                    Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-        );
     }
 
     public void viewPhoto(int pos){
@@ -104,13 +86,13 @@ public class AllPhotoFragment extends Fragment {
             viewIntent.putExtra(IS_FAVORITE, photos.get(pos).isFavorite());
             startActivity(viewIntent);
         } else {
-            Snackbar.make(fab, "No such photo", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "No such photo", Snackbar.LENGTH_SHORT).show();
         }
     }
 
     public void addPhoto(Uri photoUri){
         photos.add(new PhotoModel(false, photoUri));
-        Snackbar.make(fab, "Photo added successfully", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo added successfully", Snackbar.LENGTH_SHORT).show();
     }
 
     public void deletePhoto(final int pos){
@@ -125,7 +107,7 @@ public class AllPhotoFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         tempPhoto[0] = photos.remove(pos);
                         adapter.notifyDataSetChanged();
-                        Snackbar.make(fab, "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 photos.add(pos, tempPhoto[0]);
