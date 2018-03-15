@@ -13,8 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import static geekgram.supernacho.ru.MainFragment.IMG_URI;
-import static geekgram.supernacho.ru.MainFragment.IS_FAVORITE;
+import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
+import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
