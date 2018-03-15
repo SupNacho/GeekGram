@@ -4,6 +4,7 @@ package geekgram.supernacho.ru;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -12,6 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import java.io.IOException;
+
+import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
 /**
@@ -33,6 +38,7 @@ public class MainPhotoFragment extends Fragment {
     private Fragment allPhotoFragment;
     private Fragment dbFragment;
     private Fragment netFragment;
+    private FloatingActionButton fab;
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -53,8 +59,11 @@ public class MainPhotoFragment extends Fragment {
             };
 
     private void changeFragment(Fragment fragment) {
+        String tag = "101";
+        if (fragment instanceof AllPhotoFragment) tag = "00001";
+        if (fragment instanceof FavoritesFragment) tag = "00002";
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.containerFragment, fragment);
+        transaction.replace(R.id.containerFragment, fragment, tag);
         transaction.commit();
     }
 
@@ -87,11 +96,27 @@ public class MainPhotoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_photo, container, false);
 
         initFragments();
+        initUI(view);
+        return view;
+    }
+
+    private void initUI(View view) {
         frameLayout = view.findViewById(R.id.containerFragment);
         BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
-        return view;
+        fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View view) {
+                                       try {
+                                           ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                                       } catch (IOException e){
+                                           Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
+                                       }
+                                   }
+                               }
+        );
     }
 
     private void initFragments() {
