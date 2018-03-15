@@ -32,10 +32,10 @@ public class PhotoFragmentsAdapter extends FragmentPagerAdapter {
         return fragments.size();
     }
 
-//    @Override
-//    public CharSequence getPageTitle(int position) {
-//        Fragment fr = fragments.get(position);
-//        return fragmentsTitle.get(fr);
-//    }
+    @Override
+    public CharSequence getPageTitle(int position) {
+        Fragment fr = fragments.get(position);
+        return fragmentsTitle.get(fr);
+    }
 }
 
