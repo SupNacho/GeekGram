@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -29,27 +30,32 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
+import geekgram.supernacho.ru.model.PhotoModel;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
 
     public static final int CAMERA_CAPTURE = 1;
 
-    private AllPhotoFragment allPhotoFragment;
     private String currentPhotoPath;
     private ViewPager viewPager;
     private PhotoFragmentsAdapter photoFragmentsPageAdapter;
     private Fragment mainFragment;
     private Fragment favoriteFragment;
+    private List<PhotoModel> photos;
+    private List<PhotoModel> favPhotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initPhotosArrays();
         initNavDrawer();
         initFragment();
         initPageAdapter();
@@ -57,6 +63,23 @@ public class MainActivity extends AppCompatActivity
         initTabLayout();
         RefWatcher refWatcher = LeakCanary.install(this.getApplication());
         refWatcher.watch(this);
+    }
+
+    private void initPhotosArrays() {
+        photos = new ArrayList<>();
+        favPhotos = new ArrayList<>();
+        boolean isFav;
+        for (int i = 0; i < 15; i++){
+            if (i%3 == 0){
+                isFav = true;
+            } else {
+                isFav = false;
+            }
+            photos.add(new PhotoModel(isFav, null));
+        }
+        for (PhotoModel photo : photos) {
+            if (photo.isFavorite()) favPhotos.add(photo);
+        }
     }
 
     private void initTabLayout() {
@@ -80,10 +103,6 @@ public class MainActivity extends AppCompatActivity
     private void initFragment() {
         mainFragment = MainPhotoFragment.newInstance(null, null);
         favoriteFragment = FavoritesFragment.newInstance(null, null);
-//        allPhotoFragment = AllPhotoFragment.newInstance();
-//        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
-//        fragmentManager.add(R.id.main_fragment_container, allPhotoFragment);
-//        fragmentManager.commit();
     }
 
     private void initNavDrawer() {
@@ -144,7 +163,8 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
             Uri imageUri = Uri.parse(currentPhotoPath);
-            allPhotoFragment.addPhoto(imageUri);
+            Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag("00001");
+            ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
             MediaScannerConnection.scanFile(MainActivity.this,
                     new String[]{imageUri.getPath()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
@@ -196,5 +216,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public List<PhotoModel> getPhotos() {
+        return photos;
+    }
+
+    public List<PhotoModel> getFavPhotos() {
+        return favPhotos;
     }
 }
