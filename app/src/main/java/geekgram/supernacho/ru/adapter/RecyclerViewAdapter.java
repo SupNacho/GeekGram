@@ -16,12 +16,12 @@ import geekgram.supernacho.ru.model.PhotoModel;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
-    private AllPhotoFragment allPhotoFragment;
+    private PhotoInterface photoFragment;
 
-    public RecyclerViewAdapter(List<PhotoModel> photos, WeakReference<AllPhotoFragment> fragmentWeakReference) {
+    public RecyclerViewAdapter(List<PhotoModel> photos, WeakReference<PhotoInterface> fragmentWeakReference) {
         this.photos = photos;
         if (fragmentWeakReference.get() != null) {
-            this.allPhotoFragment = fragmentWeakReference.get(); // потом заменю на DI, это у нас в следующем курсе
+            this.photoFragment = fragmentWeakReference.get(); // потом заменю на DI, это у нас в следующем курсе
         }
     }
 
@@ -100,14 +100,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    allPhotoFragment.deletePhoto(getLayoutPosition());
+                    photoFragment.deletePhoto(getLayoutPosition());
                     return false;
                 }
             });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    allPhotoFragment.viewPhoto(getLayoutPosition());
+                    photoFragment.viewPhoto(getLayoutPosition());
                 }
             });
         }
@@ -124,14 +124,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    allPhotoFragment.deletePhoto(getLayoutPosition());
+                    photoFragment.deletePhoto(getLayoutPosition());
                     return false;
                 }
             });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    allPhotoFragment.viewPhoto(getLayoutPosition());
+                    photoFragment.viewPhoto(getLayoutPosition());
                 }
             });
         }

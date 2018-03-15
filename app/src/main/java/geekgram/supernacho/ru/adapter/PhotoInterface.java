@@ -1,8 +1,7 @@
 package geekgram.supernacho.ru.adapter;
 
-/**
- * Created by SuperNacho on 15.03.2018.
- */
 
-public class PhotoInterface {
+public interface PhotoInterface {
+    void viewPhoto(int pos);
+    void deletePhoto(final int pos);
 }
