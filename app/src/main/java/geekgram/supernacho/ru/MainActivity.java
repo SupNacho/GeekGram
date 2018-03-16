@@ -2,8 +2,6 @@ package geekgram.supernacho.ru;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,49 +9,128 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainFragment.OnFragmentInteractionListener {
+import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
+import geekgram.supernacho.ru.model.PhotoModel;
 
-    private MainFragment mainFragment;
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
+
     public static final int CAMERA_CAPTURE = 1;
+
     private String currentPhotoPath;
+    private ViewPager viewPager;
+    private PhotoFragmentsAdapter photoFragmentsPageAdapter;
+    private Fragment mainFragment;
+    private Fragment favoriteFragment;
+    private List<PhotoModel> photos;
+    private List<PhotoModel> favPhotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initPhotosArrays();
         initNavDrawer();
         initFragment();
-        RefWatcher refWatcher = LeakCanary.install(this.getApplication());
-        refWatcher.watch(this);
+        initPageAdapter();
+        initViewPager();
+        initTabLayout();
+    }
+
+    private void initPhotosArrays() {
+        photos = new ArrayList<>();
+        favPhotos = new ArrayList<>();
+        boolean isFav;
+        for (int i = 0; i < 15; i++){
+            if (i%3 == 0){
+                isFav = true;
+            } else {
+                isFav = false;
+            }
+            photos.add(new PhotoModel(isFav, null));
+        }
+        for (PhotoModel photo : photos) {
+            if (photo.isFavorite()) favPhotos.add(photo);
+        }
+    }
+
+    private void initTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int pos = tab.getPosition();
+                switch (pos){
+                    case 0:
+                        if ((mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO)) != null) {
+                            ((AllPhotoFragment) mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO))
+                                    .getAdapter().notifyDataSetChanged();
+                        }
+                        break;
+                    case 1:
+                        if ((favoriteFragment) != null) {
+                            ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
+                        }
+                        break;
+                        default:
+                            Toast.makeText(getApplicationContext(), "No such tab", Toast.LENGTH_LONG).show();
+                            break;
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    private void initViewPager() {
+        viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(photoFragmentsPageAdapter);
+    }
+
+    private void initPageAdapter() {
+        photoFragmentsPageAdapter = new PhotoFragmentsAdapter(getSupportFragmentManager());
+        photoFragmentsPageAdapter.addFragment(mainFragment, "Main");
+        photoFragmentsPageAdapter.addFragment(favoriteFragment, "Favorites");
     }
 
     private void initFragment() {
-        mainFragment = MainFragment.newInstance();
-        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
-        fragmentManager.add(R.id.main_fragment_container, mainFragment);
-        fragmentManager.commit();
+        mainFragment = MainPhotoFragment.newInstance(null, null);
+        favoriteFragment = FavoritesFragment.newInstance(null, null);
     }
 
     private void initNavDrawer() {
@@ -68,24 +145,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        //ДЗ пункт №3
-        int[][] states = new int[][]{
-                new int[]{-android.R.attr.state_enabled},
-                new int[]{-android.R.attr.state_checked},
-                new int[]{android.R.attr.state_checked},
-                new int[]{android.R.attr.state_pressed},
-                new int[]{android.R.attr.state_enabled}};
-        int[] colors = new int[]{
-                Color.MAGENTA,
-                Color.BLACK,
-                Color.RED,
-                Color.GREEN,
-                Color.BLUE};
-
-        navigationView.setItemTextColor(new ColorStateList(states, colors));
-        navigationView.setItemIconTintList(new ColorStateList(states, colors));
         navigationView.setCheckedItem(R.id.nav_main);
+
+
     }
 
     public void dispatchTakepictureIntent(int actionCode) throws IOException {
@@ -129,7 +191,8 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
             Uri imageUri = Uri.parse(currentPhotoPath);
-            mainFragment.addPhoto(imageUri);
+            Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
+            ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
             MediaScannerConnection.scanFile(MainActivity.this,
                     new String[]{imageUri.getPath()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
@@ -181,5 +244,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public List<PhotoModel> getPhotos() {
+        return photos;
+    }
+
+    public List<PhotoModel> getFavPhotos() {
+        return favPhotos;
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_all"
+        android:icon="@drawable/ic_all_nav_item"
+        android:title="All" />
+
+    <item
+        android:id="@+id/navigation_db"
+        android:icon="@drawable/ic_storage_nav_item"
+        android:title="From DB" />
+
+    <item
+        android:id="@+id/navigation_net"
+        android:icon="@drawable/ic_net_nav_item"
+        android:title="From Net" />
+
+</menu>
