@@ -10,16 +10,15 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import geekgram.supernacho.ru.AllPhotoFragment;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private PhotoInterface photoFragment;
 
-    public RecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
+    public AllPhotoRecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
         this.photos = photos;
         this.favPhotos = favPhotos;
         if (fragmentWeakReference.get() != null) {
@@ -52,6 +51,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
                     ((ViewCardTwo) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                } else {
+                    ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
                 if (photoModel.isFavorite()) {
                     ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
@@ -62,11 +63,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View view) {
                         photoModel.setFavorite(!photoModel.isFavorite());
-                        if (photoModel.isFavorite()) {
-                            favPhotos.add(photoModel);
-                        } else {
-                            favPhotos.remove(photoModel);
-                        }
+                        favListManage(photoModel);
                         notifyDataSetChanged();
                     }
                 });
@@ -74,6 +71,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             default:
                 if (photoModel.getPhotoSrc() != null) {
                     ((ViewCardOne) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                }  else {
+                    ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
                 if (photoModel.isFavorite()) {
                     ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
@@ -84,15 +83,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View view) {
                         photoModel.setFavorite(!photoModel.isFavorite());
-                        if (photoModel.isFavorite()) {
-                            favPhotos.add(photoModel);
-                        } else {
-                            favPhotos.remove(photoModel);
-                        }
+                        favListManage(photoModel);
                         notifyDataSetChanged();
                     }
                 });
                 break;
+        }
+    }
+
+    private void favListManage(PhotoModel photoModel) {
+        if (photoModel.isFavorite()) {
+            favPhotos.add(photoModel);
+        } else {
+            favPhotos.remove(photoModel);
         }
     }
 
