@@ -13,12 +13,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.adapter.PhotoInterface;
-import geekgram.supernacho.ru.adapter.RecyclerViewAdapter;
+import geekgram.supernacho.ru.adapter.AllPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
@@ -43,7 +45,7 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
     private RecyclerView recyclerView;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    private RecyclerViewAdapter adapter;
+    private FavPhotoRecyclerViewAdapter adapter;
 
 
     public FavoritesFragment() {
@@ -88,6 +90,7 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
     private void initPhotosArray() {
         photos = ((MainActivity)getContext()).getPhotos();
         favPhotos = ((MainActivity)getContext()).getFavPhotos();
+        updateFavList();
     }
 
     private void initUI(View view) {
@@ -97,25 +100,30 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
-        adapter = new RecyclerViewAdapter(((MainActivity)getContext()).getFavPhotos(), new WeakReference<PhotoInterface>(this));
+        adapter = new FavPhotoRecyclerViewAdapter(((MainActivity)getContext()).getPhotos(),
+                ((MainActivity)getContext()).getFavPhotos(), new WeakReference<PhotoInterface>(this));
         recyclerView.setAdapter(adapter);
     }
 
     public void viewPhoto(int pos){
-        if (photos.get(pos).getPhotoSrc() != null) {
-            String imgUri = photos.get(pos).getPhotoSrc().toString();
+        if (favPhotos.get(pos).getPhotoSrc() != null) {
+            String imgUri = favPhotos.get(pos).getPhotoSrc().toString();
             Intent viewIntent = new Intent(getActivity(), FullscreenPhotoActivity.class);
             viewIntent.putExtra(IMG_URI, imgUri);
             viewIntent.putExtra(IS_FAVORITE, photos.get(pos).isFavorite());
             startActivity(viewIntent);
         } else {
-            Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "No such photo", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(recyclerView, "No such photo", Snackbar.LENGTH_SHORT).show();
         }
     }
 
     public void addPhoto(Uri photoUri){
         photos.add(new PhotoModel(false, photoUri));
-        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo added successfully", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, "Photo added successfully", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public FavPhotoRecyclerViewAdapter getAdapter() {
+        return adapter;
     }
 
     public void deletePhoto(final int pos){
@@ -128,12 +136,17 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
                 .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        tempPhoto[0] = photos.remove(pos);
+                        PhotoModel pm = favPhotos.get(pos);
+                        final int undoPos = photos.indexOf(pm);
+                        tempPhoto[0] = photos.get(undoPos);
+                        photos.remove(pm);
+                        updateFavList();
                         adapter.notifyDataSetChanged();
-                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                        Snackbar.make(recyclerView, "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                photos.add(pos, tempPhoto[0]);
+                                photos.add(undoPos, tempPhoto[0]);
+                                updateFavList();
                                 adapter.notifyDataSetChanged();
                             }
                         }).show();
@@ -141,6 +154,13 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
                 })
                 .show();
 
+    }
+
+    private void updateFavList() {
+        favPhotos.clear();
+        for (PhotoModel photo : photos) {
+            if (photo.isFavorite()) favPhotos.add(photo);
+        }
     }
 
 }
