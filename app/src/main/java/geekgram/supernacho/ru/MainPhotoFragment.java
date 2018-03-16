@@ -45,23 +45,20 @@ public class MainPhotoFragment extends Fragment {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.navigation_all:
-                            changeFragment(allPhotoFragment);
+                            changeFragment(allPhotoFragment, FragmentTags.ALL_PHOTO);
                             return true;
                         case R.id.navigation_db:
-                            changeFragment(dbFragment);
+                            changeFragment(dbFragment, FragmentTags.DB_PHOTO);
                             return true;
                         case R.id.navigation_net:
-                            changeFragment(netFragment);
+                            changeFragment(netFragment, FragmentTags.NET_PHOTO);
                             return true;
                     }
                     return false;
                 }
             };
 
-    private void changeFragment(Fragment fragment) {
-        String tag = "101";
-        if (fragment instanceof AllPhotoFragment) tag = "00001";
-        if (fragment instanceof FavoritesFragment) tag = "00002";
+    private void changeFragment(Fragment fragment, String tag) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.containerFragment, fragment, tag);
         transaction.commit();
