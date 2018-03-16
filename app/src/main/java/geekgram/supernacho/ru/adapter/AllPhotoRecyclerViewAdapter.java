@@ -16,10 +16,12 @@ import geekgram.supernacho.ru.model.PhotoModel;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
+    private List<PhotoModel> favPhotos;
     private PhotoInterface photoFragment;
 
-    public RecyclerViewAdapter(List<PhotoModel> photos, WeakReference<PhotoInterface> fragmentWeakReference) {
+    public RecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
         this.photos = photos;
+        this.favPhotos = favPhotos;
         if (fragmentWeakReference.get() != null) {
             this.photoFragment = fragmentWeakReference.get(); // потом заменю на DI, это у нас в следующем курсе
         }
@@ -60,6 +62,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View view) {
                         photoModel.setFavorite(!photoModel.isFavorite());
+                        if (photoModel.isFavorite()) {
+                            favPhotos.add(photoModel);
+                        } else {
+                            favPhotos.remove(photoModel);
+                        }
                         notifyDataSetChanged();
                     }
                 });
@@ -77,6 +84,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View view) {
                         photoModel.setFavorite(!photoModel.isFavorite());
+                        if (photoModel.isFavorite()) {
+                            favPhotos.add(photoModel);
+                        } else {
+                            favPhotos.remove(photoModel);
+                        }
                         notifyDataSetChanged();
                     }
                 });
