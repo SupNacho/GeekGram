@@ -10,16 +10,15 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import geekgram.supernacho.ru.AllPhotoFragment;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 
-public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private PhotoInterface photoFragment;
 
-    public AllPhotoRecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
+    public FavPhotoRecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
         this.photos = photos;
         this.favPhotos = favPhotos;
         if (fragmentWeakReference.get() != null) {
@@ -47,11 +46,13 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final PhotoModel photoModel = photos.get(position);
+        final PhotoModel photoModel = favPhotos.get(position);
         switch (holder.getItemViewType()) {
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
                     ((ViewCardTwo) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                } else {
+                    ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
                 if (photoModel.isFavorite()) {
                     ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
@@ -70,6 +71,8 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             default:
                 if (photoModel.getPhotoSrc() != null) {
                     ((ViewCardOne) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                } else {
+                    ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
                 if (photoModel.isFavorite()) {
                     ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
@@ -98,7 +101,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        return photos.size();
+        return favPhotos.size();
     }
 
     class ViewCardOne extends RecyclerView.ViewHolder {
