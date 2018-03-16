@@ -1,16 +1,21 @@
 package geekgram.supernacho.ru;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
 
     public static final int CAMERA_CAPTURE = 1;
+    public static final int READ_EXT_STORAGE_PERMISSION_REQUEST_CODE = 1;
+    public static final int WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE = 2;
 
     private String currentPhotoPath;
     private ViewPager viewPager;
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        requestReadPermission();
+        requestWritePermission();
         initPhotosArrays();
         initNavDrawer();
         initFragment();
@@ -64,8 +73,8 @@ public class MainActivity extends AppCompatActivity
         photos = new ArrayList<>();
         favPhotos = new ArrayList<>();
         boolean isFav;
-        for (int i = 0; i < 15; i++){
-            if (i%3 == 0){
+        for (int i = 0; i < 3; i++) {
+            if (i % 3 == 0) {
                 isFav = true;
             } else {
                 isFav = false;
@@ -86,7 +95,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 int pos = tab.getPosition();
-                switch (pos){
+                switch (pos) {
                     case 0:
                         if ((mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO)) != null) {
                             ((AllPhotoFragment) mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO))
@@ -98,9 +107,9 @@ public class MainActivity extends AppCompatActivity
                             ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
                         }
                         break;
-                        default:
-                            Toast.makeText(getApplicationContext(), "No such tab", Toast.LENGTH_LONG).show();
-                            break;
+                    default:
+                        Toast.makeText(getApplicationContext(), "No such tab", Toast.LENGTH_LONG).show();
+                        break;
 
                 }
             }
@@ -244,6 +253,47 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void requestReadPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ActivityCompat.requestPermissions(this, new String[]{  Manifest.permission.READ_EXTERNAL_STORAGE },
+                        READ_EXT_STORAGE_PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    private void requestWritePermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{  Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                    WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case READ_EXT_STORAGE_PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d("++", "READ GRANTED");
+                } else {
+                    Log.d("++", "READ NOT GRANTED");
+                }
+                break;
+            case WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d("++", "WRITE GRANTED");
+                } else {
+                    Log.d("++", "WRITE NOT GRANTED");
+                }
+                break;
+                default:
+                    Log.w("++", "Request code not found");
+                    break;
+        }
     }
 
     public List<PhotoModel> getPhotos() {
