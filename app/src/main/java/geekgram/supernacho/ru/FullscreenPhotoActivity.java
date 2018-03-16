@@ -13,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
 import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
 
@@ -123,7 +125,8 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
         boolean isFavorite = intent.getBooleanExtra(IS_FAVORITE, false);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
-        imgView.setImageURI(imgUri);
+        Picasso.get().load(imgUri).into(imgView);
+//        imgView.setImageURI(imgUri);
         ImageButton favButton = findViewById(R.id.view_fav_button);
         if (isFavorite) {
             favButton.setImageResource(R.drawable.ic_favorites_on);

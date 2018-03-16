@@ -1,11 +1,14 @@
 package geekgram.supernacho.ru.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -31,8 +34,9 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         return position % 3;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         switch (viewType) {
             case 0:
@@ -45,12 +49,12 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final PhotoModel photoModel = favPhotos.get(position);
         switch (holder.getItemViewType()) {
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
-                    ((ViewCardTwo) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                    Picasso.get().load(photoModel.getPhotoSrc()).into(((ViewCardTwo) holder).imageView);
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
@@ -70,7 +74,9 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
-                    ((ViewCardOne) holder).imageView.setImageURI(photoModel.getPhotoSrc());
+                    Picasso.get()
+                            .load(photoModel.getPhotoSrc())
+                            .into(((ViewCardOne) holder).imageView);
                 } else {
                     ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
