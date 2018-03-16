@@ -192,13 +192,14 @@ public class MainActivity extends AppCompatActivity
 
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = "file:" + image.getAbsolutePath();
+        Log.d("++//", "Saved to: " + currentPhotoPath);
         return image;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
+            Log.d("++//", "Result: " + currentPhotoPath);
             Uri imageUri = Uri.parse(currentPhotoPath);
             Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
             ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
@@ -208,7 +209,6 @@ public class MainActivity extends AppCompatActivity
                         public void onScanCompleted(String path, Uri uri) {
                         }
                     });
-
         }
     }
 
@@ -257,42 +257,42 @@ public class MainActivity extends AppCompatActivity
 
     public void requestReadPermission() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                ActivityCompat.requestPermissions(this, new String[]{  Manifest.permission.READ_EXTERNAL_STORAGE },
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         READ_EXT_STORAGE_PERMISSION_REQUEST_CODE);
             }
         }
     }
 
-    private void requestWritePermission(){
+    private void requestWritePermission() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{  Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case READ_EXT_STORAGE_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("++", "READ GRANTED");
                 } else {
                     Log.d("++", "READ NOT GRANTED");
                 }
                 break;
             case WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("++", "WRITE GRANTED");
                 } else {
                     Log.d("++", "WRITE NOT GRANTED");
                 }
                 break;
-                default:
-                    Log.w("++", "Request code not found");
-                    break;
+            default:
+                Log.w("++", "Request code not found");
+                break;
         }
     }
 
@@ -304,3 +304,5 @@ public class MainActivity extends AppCompatActivity
         return favPhotos;
     }
 }
+// TODO: 16.03.2018 выставить размер фото в пикассо
+// TODO: 16.03.2018 разобраться с работой фото на АсусZ5 (как вариант блокировать поворот) 

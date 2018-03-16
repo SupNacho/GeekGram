@@ -102,6 +102,7 @@ public class MainPhotoFragment extends Fragment {
         BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
+        changeFragment(allPhotoFragment, FragmentTags.ALL_PHOTO);
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
                                    @Override
