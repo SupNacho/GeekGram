@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -19,12 +18,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +58,6 @@ public class MainActivity extends AppCompatActivity
         initPageAdapter();
         initViewPager();
         initTabLayout();
-        RefWatcher refWatcher = LeakCanary.install(this.getApplication());
-        refWatcher.watch(this);
     }
 
     private void initPhotosArrays() {
@@ -87,6 +82,39 @@ public class MainActivity extends AppCompatActivity
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int pos = tab.getPosition();
+                switch (pos){
+                    case 0:
+                        if ((mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO)) != null) {
+                            ((AllPhotoFragment) mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO))
+                                    .getAdapter().notifyDataSetChanged();
+                        }
+                        break;
+                    case 1:
+                        if ((favoriteFragment) != null) {
+                            ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
+                        }
+                        break;
+                        default:
+                            Toast.makeText(getApplicationContext(), "No such tab", Toast.LENGTH_LONG).show();
+                            break;
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void initViewPager() {
@@ -163,7 +191,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
             Uri imageUri = Uri.parse(currentPhotoPath);
-            Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag("00001");
+            Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
             ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
             MediaScannerConnection.scanFile(MainActivity.this,
                     new String[]{imageUri.getPath()}, null,
