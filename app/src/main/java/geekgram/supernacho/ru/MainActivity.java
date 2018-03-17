@@ -3,6 +3,7 @@ package geekgram.supernacho.ru;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment favoriteFragment;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,11 +126,15 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+        tabLayout.getTabAt(0).select();
     }
 
     private void initViewPager() {
         viewPager = findViewById(R.id.container);
         viewPager.setAdapter(photoFragmentsPageAdapter);
+        Log.d("++//", "All ph: " + R.layout.fragment_allphoto + "\n" +
+                "DB ph: " + R.layout.fragment_db + "\n Net ph: " + R.layout.fragment_net + "\n Main: " +
+        R.layout.fragment_main_photo);
     }
 
     private void initPageAdapter() {
@@ -184,15 +190,15 @@ public class MainActivity extends AppCompatActivity
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM), "Camera");
+        Log.d("++//", "Storage: " + storageDir.getAbsolutePath());
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
+        Log.d("++//", "Img: " + image.getAbsolutePath());
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = "file:" + image.getAbsolutePath();
-        Log.d("++//", "Saved to: " + currentPhotoPath);
         return image;
     }
 
@@ -200,16 +206,19 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
             Log.d("++//", "Result: " + currentPhotoPath);
-            Uri imageUri = Uri.parse(currentPhotoPath);
-            Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
-            ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
-            MediaScannerConnection.scanFile(MainActivity.this,
-                    new String[]{imageUri.getPath()}, null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        public void onScanCompleted(String path, Uri uri) {
-                        }
-                    });
+            if (currentPhotoPath != null) {
+                Uri imageUri = Uri.parse(currentPhotoPath);
+                Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
+                ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
+                MediaScannerConnection.scanFile(MainActivity.this,
+                        new String[]{imageUri.getPath()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                            }
+                        });
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -305,4 +314,4 @@ public class MainActivity extends AppCompatActivity
     }
 }
 // TODO: 16.03.2018 выставить размер фото в пикассо
-// TODO: 16.03.2018 разобраться с работой фото на АсусZ5 (как вариант блокировать поворот) 
+// TODO: 16.03.2018 разобраться с работой фото на АсусZ5 (как вариант блокировать поворот)
