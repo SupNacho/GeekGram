@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,18 +20,10 @@ import java.io.IOException;
 import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MainPhotoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainPhotoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -64,9 +57,7 @@ public class MainPhotoFragment extends Fragment {
         transaction.commit();
     }
 
-
     public MainPhotoFragment() {
-        // Required empty public constructor
     }
 
     public static MainPhotoFragment newInstance(String param1, String param2) {
@@ -91,7 +82,7 @@ public class MainPhotoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_photo, container, false);
-
+        Log.d("++//","Atached " + this.getTag());
         initFragments();
         initUI(view);
         return view;
@@ -102,7 +93,6 @@ public class MainPhotoFragment extends Fragment {
         BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
-        changeFragment(allPhotoFragment, FragmentTags.ALL_PHOTO);
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
                                    @Override
@@ -119,8 +109,8 @@ public class MainPhotoFragment extends Fragment {
 
     private void initFragments() {
         allPhotoFragment = AllPhotoFragment.newInstance();
-        dbFragment = DbFragment.newInstance(null, null);
-        netFragment = NetFragment.newInstance(null, null);
+        dbFragment = PhotosFromDbFragment.newInstance(null, null);
+        netFragment = PhotosFromNetFragment.newInstance(null, null);
     }
 
 }
