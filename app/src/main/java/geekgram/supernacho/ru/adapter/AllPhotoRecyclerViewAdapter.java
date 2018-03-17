@@ -54,7 +54,11 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         switch (holder.getItemViewType()) {
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
-                    Picasso.get().load(photoModel.getPhotoSrc()).into(((ViewCardTwo) holder).imageView);
+                    Picasso.get()
+                            .load(photoModel.getPhotoSrc())
+                            .fit()
+                            .centerInside()
+                            .into(((ViewCardTwo) holder).imageView);
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
@@ -76,6 +80,8 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 if (photoModel.getPhotoSrc() != null) {
                     Picasso.get()
                             .load(photoModel.getPhotoSrc())
+                            .fit()
+                            .centerInside()
                             .into(((ViewCardOne) holder).imageView);
                 }  else {
                     ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
