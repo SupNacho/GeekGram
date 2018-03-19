@@ -18,5 +18,9 @@
     <color name="primaryTextColorYB">#000000</color>
     <color name="secondaryTextColorYB">#ffffff</color>
 
+    <color name="colorPrimaryGreen">#43A047</color>
+    <color name="colorPrimaryDarkGreen">#2E7D32</color>
+    <color name="colorAccentGreen">#FF1744</color>
+
     <color name="black_overlay">#66000000</color>
 </resources>
