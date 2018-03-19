@@ -1,6 +1,6 @@
 <resources>
 
-    <!-- Base application theme. -->
+     Base application theme.
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
@@ -9,18 +9,41 @@
 
     </style>
 
-    <style name="SecondTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primaryColorYB</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColorYB</item>
-        <item name="colorAccent">@color/secondaryColorYB</item>
-    </style>
+    <!--<style name="SecondTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--<item name="colorPrimary">@color/primaryColorYB</item>-->
+        <!--<item name="colorPrimaryDark">@color/primaryDarkColorYB</item>-->
+        <!--<item name="colorAccent">@color/secondaryColorYB</item>-->
+    <!--</style>-->
 
     <style name="ButtonThemeOne" parent="Theme.AppCompat.CompactMenu">
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/primaryColorYB</item>
         <item name="android:background">@color/secondaryColorYB</item>
     </style>
+
+    <!--My Styles-->
+    <style name="standard_AppBarLayoutStyle" parent="@style/Widget.Design.AppBarLayout">
+    </style>
+    <style name="standard_TextViewLayoutStyle" parent="@style/TextAppearance.AppCompat">
+    </style>
+
+    <style name="standard_AppBarLayoutStyle.GreenBerry" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">@color/primaryDarkColor</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="standard_TextViewLayoutStyle.GreenBerry" parent="@style/TextAppearance.AppCompat">
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="standard_AppBarLayoutStyle.YellowBlue" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">@color/primaryDarkColorYB</item>
+        <item name="android:textColor">@color/secondaryTextColorYB</item>
+    </style>
+    <style name="standard_TextViewLayoutStyle.YellowBlue" parent="@style/TextAppearance.AppCompat">
+        <item name="android:textColor">@color/primaryTextColorYB</item>
+    </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
