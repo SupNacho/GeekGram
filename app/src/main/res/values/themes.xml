@@ -1,3 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="ThemeStandard" parent="AppTheme.NoActionBar">
+        <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle</item>
+        <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle</item>
+    </style>
+
+    <style name="ThemeStandard.GreenBerry" parent="AppTheme.NoActionBar">
+        <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.GreenBerry</item>
+        <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.GreenBerry</item>
+    </style>
+
+    <style name="ThemeStandard.YellowBlue" parent="AppTheme.NoActionBar">
+        <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.YellowBlue</item>
+        <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.YellowBlue</item>
+    </style>
 </resources>
