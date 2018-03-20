@@ -11,7 +11,13 @@
     </style>
 
     <style name="ThemeStandard.YellowBlue" parent="AppTheme.NoActionBar">
+        <item name="appStyle">@style/standard_AppStyle.YellowBlue</item>
         <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.YellowBlue</item>
         <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.YellowBlue</item>
+        <item name="toolBarLayoutStyle">@style/standard_ToolbarLayoutStyle.YellowBlue</item>
+        <item name="fabStyle">@style/standard_fabStyle.YellowBlue</item>
+        <item name="bottomNavigationStyle">@style/standard_bottomNavigationStyle.YellowBlue</item>
+        <item name="cardViewOneStyle">@style/standard_cardViewOneStyle.YellowBlue</item>
+        <item name="cardViewTwoStyle">@style/standard_cardViewTwoStyle.YellowBlue</item>
     </style>
 </resources>

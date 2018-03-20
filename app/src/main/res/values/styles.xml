@@ -9,24 +9,22 @@
 
     </style>
 
-    <!--<style name="SecondTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
-        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-        <!--<item name="colorPrimary">@color/primaryColorYB</item>-->
-        <!--<item name="colorPrimaryDark">@color/primaryDarkColorYB</item>-->
-        <!--<item name="colorAccent">@color/secondaryColorYB</item>-->
-    <!--</style>-->
-
     <style name="ButtonThemeOne" parent="Theme.AppCompat.CompactMenu">
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/primaryColorYB</item>
         <item name="android:background">@color/secondaryColorYB</item>
     </style>
 
-    <!--My Styles-->
+    <!--Start of Lime Theme-->
+
     <style name="standard_AppBarLayoutStyle" parent="@style/Widget.Design.AppBarLayout">
     </style>
     <style name="standard_TextViewLayoutStyle" parent="@style/TextAppearance.AppCompat">
     </style>
+
+    <!--End of Lime Theme-->
+
+    <!--Start of Green Berry Theme-->
 
     <style name="standard_AppBarLayoutStyle.GreenBerry" parent="@style/Widget.Design.AppBarLayout">
         <item name="android:background">@color/primaryDarkColor</item>
@@ -35,15 +33,41 @@
     <style name="standard_TextViewLayoutStyle.GreenBerry" parent="@style/TextAppearance.AppCompat">
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+    <!--End of Green Berry Theme-->
 
+    <!--Start of Yellow Blue Theme-->
+
+    <style name="standard_AppStyle.YellowBlue" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primaryLightColorYB</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColorYB</item>
+        <item name="colorAccent">@color/secondaryColorYB</item>
+    </style>
     <style name="standard_AppBarLayoutStyle.YellowBlue" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">@color/primaryColorYB</item>
+        <item name="android:textColor">@color/secondaryTextColorYB</item>
+    </style>
+    <style name="standard_ToolbarLayoutStyle.YellowBlue" parent="@style/Widget.AppCompat.Toolbar">
         <item name="android:background">@color/primaryDarkColorYB</item>
         <item name="android:textColor">@color/secondaryTextColorYB</item>
     </style>
     <style name="standard_TextViewLayoutStyle.YellowBlue" parent="@style/TextAppearance.AppCompat">
-        <item name="android:textColor">@color/primaryTextColorYB</item>
+        <item name="android:textColor">@color/secondaryTextColorYB</item>
+    </style>
+    <style name="standard_fabStyle.YellowBlue" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="backgroundTint">@color/primaryColorYB</item>
+    </style>
+    <style name="standard_bottomNavigationStyle.YellowBlue" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_y_b</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_text_y_b</item>
+    </style>
+    <style name="standard_cardViewOneStyle.YellowBlue" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/primaryLightColorYB</item>
+    </style>
+    <style name="standard_cardViewTwoStyle.YellowBlue" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/secondaryColorYB</item>
     </style>
 
+    <!--End of Yellow Blue Theme-->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

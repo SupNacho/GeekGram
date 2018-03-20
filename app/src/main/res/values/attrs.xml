@@ -5,7 +5,13 @@
     </declare-styleable>
 
     <declare-styleable name="ThemeStandard">
+        <attr name="appStyle" format="reference"/>
         <attr name="appBarLayoutStyle" format="reference"/>
         <attr name="textViewLayoutStyle" format="reference"/>
+        <attr name="toolBarLayoutStyle" format="reference"/>
+        <attr name="fabStyle" format="reference"/>
+        <attr name="bottomNavigationStyle" format="reference"/>
+        <attr name="cardViewOneStyle" format="reference"/>
+        <attr name="cardViewTwoStyle" format="reference"/>
     </declare-styleable>
 </resources>
