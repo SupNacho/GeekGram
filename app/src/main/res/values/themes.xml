@@ -2,10 +2,12 @@
 <resources>
     <style name="ThemeStandard.Lime" parent="AppTheme.NoActionBar">
         <item name="appStyle">@style/standard_AppStyle.Lime</item>
+        <item name="headerNavDrawerStyle">@style/standard_HeaderNavDrawerStyle.Lime</item>
         <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.Lime</item>
         <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.Lime</item>
         <item name="toolBarLayoutStyle">@style/standard_ToolbarLayoutStyle.Lime</item>
         <item name="fabStyle">@style/standard_fabStyle.Lime</item>
+        <item name="navigationDrawerStyle">@style/standard_navigationDrawerStyle.Lime</item>
         <item name="bottomNavigationStyle">@style/standard_bottomNavigationStyle.Lime</item>
         <item name="cardViewOneStyle">@style/standard_cardViewOneStyle.Lime</item>
         <item name="cardViewTwoStyle">@style/standard_cardViewTwoStyle.Lime</item>
@@ -13,10 +15,12 @@
 
     <style name="ThemeStandard.GreenBerry" parent="AppTheme.NoActionBar">
         <item name="appStyle">@style/standard_AppStyle.GreenBerry</item>
+        <item name="headerNavDrawerStyle">@style/standard_HeaderNavDrawerStyle.GreenBerry</item>
         <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.GreenBerry</item>
         <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.GreenBerry</item>
         <item name="toolBarLayoutStyle">@style/standard_ToolbarLayoutStyle.GreenBerry</item>
         <item name="fabStyle">@style/standard_fabStyle.GreenBerry</item>
+        <item name="navigationDrawerStyle">@style/standard_navigationDrawerStyle.GreenBerry</item>
         <item name="bottomNavigationStyle">@style/standard_bottomNavigationStyle.GreenBerry</item>
         <item name="cardViewOneStyle">@style/standard_cardViewOneStyle.GreenBerry</item>
         <item name="cardViewTwoStyle">@style/standard_cardViewTwoStyle.GreenBerry</item>
@@ -24,10 +28,12 @@
 
     <style name="ThemeStandard.YellowBlue" parent="AppTheme.NoActionBar">
         <item name="appStyle">@style/standard_AppStyle.YellowBlue</item>
+        <item name="headerNavDrawerStyle">@style/standard_HeaderNavDrawerStyle.YellowBlue</item>
         <item name="appBarLayoutStyle">@style/standard_AppBarLayoutStyle.YellowBlue</item>
         <item name="textViewLayoutStyle">@style/standard_TextViewLayoutStyle.YellowBlue</item>
         <item name="toolBarLayoutStyle">@style/standard_ToolbarLayoutStyle.YellowBlue</item>
         <item name="fabStyle">@style/standard_fabStyle.YellowBlue</item>
+        <item name="navigationDrawerStyle">@style/standard_navigationDrawerStyle.YellowBlue</item>
         <item name="bottomNavigationStyle">@style/standard_bottomNavigationStyle.YellowBlue</item>
         <item name="cardViewOneStyle">@style/standard_cardViewOneStyle.YellowBlue</item>
         <item name="cardViewTwoStyle">@style/standard_cardViewTwoStyle.YellowBlue</item>

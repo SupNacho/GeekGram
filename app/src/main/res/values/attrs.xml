@@ -6,6 +6,7 @@
 
     <declare-styleable name="ThemeStandard">
         <attr name="appStyle" format="reference"/>
+        <attr name="headerNavDrawerStyle" format="reference"/>
         <attr name="appBarLayoutStyle" format="reference"/>
         <attr name="textViewLayoutStyle" format="reference"/>
         <attr name="toolBarLayoutStyle" format="reference"/>

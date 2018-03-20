@@ -3,10 +3,9 @@
      Base application theme.
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimaryGreen</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
-        <item name="colorAccent">@color/secondaryColor</item>
-
+        <item name="colorPrimary">@color/lighter_black_overlay</item>
+        <item name="colorPrimaryDark">@color/black_overlay</item>
+        <item name="colorAccent">@color/primaryLightColor</item>
     </style>
 
     <style name="ButtonThemeOne" parent="Theme.AppCompat.CompactMenu">
@@ -15,19 +14,22 @@
         <item name="android:background">@color/secondaryColorYB</item>
     </style>
 
-    <!--Start of Lime Theme-->
+    <!--Start of Lime Theme styles-->
 
     <style name="standard_AppStyle.Lime" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimaryGreen</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccentGreen</item>
     </style>
+    <style name="standard_HeaderNavDrawerStyle.Lime" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:background">@drawable/nav_header_lime_bg</item>
+    </style>
     <style name="standard_AppBarLayoutStyle.Lime" parent="@style/Widget.Design.AppBarLayout">
-        <item name="android:background">@color/colorPrimaryDarkGreen</item>
+        <item name="android:background">@color/colorPrimaryGreen</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
     <style name="standard_ToolbarLayoutStyle.Lime" parent="@style/Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/colorPrimaryGreen</item>
+        <item name="android:background">@color/colorPrimaryDarkGreen</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
     <style name="standard_TextViewLayoutStyle.Lime" parent="@style/TextAppearance.AppCompat">
@@ -41,8 +43,9 @@
         <item name="itemTextColor">@drawable/bottom_nav_selector_text_lime</item>
     </style>
     <style name="standard_navigationDrawerStyle.Lime" parent="@style/Widget.Design.NavigationView">
-        <item name="itemIconTint">@color/colorPrimaryDarkGreen</item>
-        <item name="itemTextColor">@color/colorPrimaryGreen</item>
+        <item name="itemIconTint">@color/colorSecondaryDarkGreen</item>
+        <item name="itemBackground">@drawable/nav_item_bg_lime</item>
+        <item name="itemTextColor">@color/primaryTextColor</item>
     </style>
     <style name="standard_cardViewOneStyle.Lime" parent="@style/CardView">
         <item name="cardBackgroundColor">@color/colorPrimaryGreen</item>
@@ -51,17 +54,20 @@
         <item name="cardBackgroundColor">@color/colorPrimaryDarkGreen</item>
     </style>
 
-    <!--End of Lime Theme-->
+    <!--End of Lime Theme styles-->
 
-    <!--Start of Green Berry Theme-->
+    <!--Start of Green Berry Theme styles-->
 
     <style name="standard_AppStyle.GreenBerry" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
     </style>
+    <style name="standard_HeaderNavDrawerStyle.GreenBerry" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:background">@drawable/nav_header_g_b_bg</item>
+    </style>
     <style name="standard_AppBarLayoutStyle.GreenBerry" parent="@style/Widget.Design.AppBarLayout">
-        <item name="android:background">@color/primaryDarkColor</item>
+        <item name="android:background">@color/primaryColor</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
     <style name="standard_ToolbarLayoutStyle.GreenBerry" parent="@style/Widget.AppCompat.Toolbar">
@@ -79,8 +85,9 @@
         <item name="itemTextColor">@drawable/bottom_nav_selector_text_g_b</item>
     </style>
     <style name="standard_navigationDrawerStyle.GreenBerry" parent="@style/Widget.Design.NavigationView">
-        <item name="itemIconTint">@drawable/bottom_nav_selector_g_b</item>
-        <item name="itemTextColor">@drawable/bottom_nav_selector_text_g_b</item>
+        <item name="itemIconTint">@color/secondaryColor</item>
+        <item name="itemBackground">@drawable/nav_item_bg_g_b</item>
+        <item name="itemTextColor">@color/primaryTextColor</item>
     </style>
     <style name="standard_cardViewOneStyle.GreenBerry" parent="@style/CardView">
         <item name="cardBackgroundColor">@color/primaryLightColor</item>
@@ -89,14 +96,17 @@
         <item name="cardBackgroundColor">@color/secondaryColor</item>
     </style>
 
-    <!--End of Green Berry Theme-->
+    <!--End of Green Berry Theme styles-->
 
-    <!--Start of Yellow Blue Theme-->
+    <!--Start of Yellow Blue Theme styles-->
 
     <style name="standard_AppStyle.YellowBlue" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primaryLightColorYB</item>
         <item name="colorPrimaryDark">@color/primaryDarkColorYB</item>
         <item name="colorAccent">@color/secondaryColorYB</item>
+    </style>
+    <style name="standard_HeaderNavDrawerStyle.YellowBlue" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:background">@drawable/nav_header_y_b_bg</item>
     </style>
     <style name="standard_AppBarLayoutStyle.YellowBlue" parent="@style/Widget.Design.AppBarLayout">
         <item name="android:background">@color/primaryColorYB</item>
@@ -117,8 +127,9 @@
         <item name="itemTextColor">@drawable/bottom_nav_selector_text_y_b</item>
     </style>
     <style name="standard_navigationDrawerStyle.YellowBlue" parent="@style/Widget.Design.NavigationView">
-        <item name="itemIconTint">@drawable/bottom_nav_selector_y_b</item>
-        <item name="itemTextColor">@drawable/bottom_nav_selector_text_y_b</item>
+        <item name="itemIconTint">@color/secondaryDarkColorYB</item>
+        <item name="itemBackground">@drawable/nav_item_bg_y_b</item>
+        <item name="itemTextColor">@color/primaryTextColorYB</item>
     </style>
     <style name="standard_cardViewOneStyle.YellowBlue" parent="@style/CardView">
         <item name="cardBackgroundColor">@color/primaryLightColorYB</item>
@@ -127,7 +138,7 @@
         <item name="cardBackgroundColor">@color/secondaryColorYB</item>
     </style>
 
-    <!--End of Yellow Blue Theme-->
+    <!--End of Yellow Blue Theme styles-->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

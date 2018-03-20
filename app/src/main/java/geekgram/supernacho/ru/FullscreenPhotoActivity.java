@@ -68,7 +68,7 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setTheme(new AppSharedPreferences(this).getSavedTheme());
         setContentView(R.layout.activity_fullscreen_photo);
 
         mVisible = true;
