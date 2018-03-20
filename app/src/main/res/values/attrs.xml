@@ -11,6 +11,7 @@
         <attr name="toolBarLayoutStyle" format="reference"/>
         <attr name="fabStyle" format="reference"/>
         <attr name="bottomNavigationStyle" format="reference"/>
+        <attr name="navigationDrawerStyle" format="reference"/>
         <attr name="cardViewOneStyle" format="reference"/>
         <attr name="cardViewTwoStyle" format="reference"/>
     </declare-styleable>

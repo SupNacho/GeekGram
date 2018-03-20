@@ -24,6 +24,6 @@ public class AppSharedPreferences {
     }
 
     public int getSavedTheme(){
-        return prefs.getInt(APP_PREFS_THEME, R.style.ThemeStandard);
+        return prefs.getInt(APP_PREFS_THEME, R.style.ThemeStandard_Lime);
     }
 }

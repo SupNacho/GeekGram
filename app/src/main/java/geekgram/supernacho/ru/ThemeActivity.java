@@ -32,9 +32,11 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
     }
 
     private void initUI() {
-        Button buttonThemeGreen = findViewById(R.id.buttom_theme_1);
+        Button buttonThemeLime = findViewById(R.id.button_theme_0);
+        buttonThemeLime.setOnClickListener(this);
+        Button buttonThemeGreen = findViewById(R.id.button_theme_1);
         buttonThemeGreen.setOnClickListener(this);
-        Button buttonThemeYellowBlue = findViewById(R.id.buttom_theme_2);
+        Button buttonThemeYellowBlue = findViewById(R.id.button_theme_2);
         buttonThemeYellowBlue.setOnClickListener(this);
     }
 
@@ -60,11 +62,15 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.buttom_theme_1:
+            case R.id.button_theme_0:
+                prefs.saveThemeId(R.style.ThemeStandard_Lime);
+                setTheme(R.style.ThemeStandard_Lime);
+                break;
+            case R.id.button_theme_1:
                 prefs.saveThemeId(R.style.ThemeStandard_GreenBerry);
                 setTheme(R.style.ThemeStandard_GreenBerry);
                 break;
-            case R.id.buttom_theme_2:
+            case R.id.button_theme_2:
                 prefs.saveThemeId(R.style.ThemeStandard_YellowBlue);
                 setTheme(R.style.ThemeStandard_YellowBlue);
                 break;

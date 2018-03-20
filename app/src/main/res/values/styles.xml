@@ -3,8 +3,8 @@
      Base application theme.
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/secondaryColor</item>
 
     </style>
@@ -17,22 +17,78 @@
 
     <!--Start of Lime Theme-->
 
-    <style name="standard_AppBarLayoutStyle" parent="@style/Widget.Design.AppBarLayout">
+    <style name="standard_AppStyle.Lime" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
+        <item name="colorAccent">@color/colorAccentGreen</item>
     </style>
-    <style name="standard_TextViewLayoutStyle" parent="@style/TextAppearance.AppCompat">
+    <style name="standard_AppBarLayoutStyle.Lime" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">@color/colorPrimaryDarkGreen</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="standard_ToolbarLayoutStyle.Lime" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/colorPrimaryGreen</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="standard_TextViewLayoutStyle.Lime" parent="@style/TextAppearance.AppCompat">
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+    <style name="standard_fabStyle.Lime" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="backgroundTint">@color/colorAccentGreen</item>
+    </style>
+    <style name="standard_bottomNavigationStyle.Lime" parent="@style/Widget.Design.BottomNavigationView">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_lime</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_text_lime</item>
+    </style>
+    <style name="standard_navigationDrawerStyle.Lime" parent="@style/Widget.Design.NavigationView">
+        <item name="itemIconTint">@color/colorPrimaryDarkGreen</item>
+        <item name="itemTextColor">@color/colorPrimaryGreen</item>
+    </style>
+    <style name="standard_cardViewOneStyle.Lime" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/colorPrimaryGreen</item>
+    </style>
+    <style name="standard_cardViewTwoStyle.Lime" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/colorPrimaryDarkGreen</item>
     </style>
 
     <!--End of Lime Theme-->
 
     <!--Start of Green Berry Theme-->
 
+    <style name="standard_AppStyle.GreenBerry" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
+    </style>
     <style name="standard_AppBarLayoutStyle.GreenBerry" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">@color/primaryDarkColor</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="standard_ToolbarLayoutStyle.GreenBerry" parent="@style/Widget.AppCompat.Toolbar">
         <item name="android:background">@color/primaryDarkColor</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
     <style name="standard_TextViewLayoutStyle.GreenBerry" parent="@style/TextAppearance.AppCompat">
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+    <style name="standard_fabStyle.GreenBerry" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="backgroundTint">@color/primaryColor</item>
+    </style>
+    <style name="standard_bottomNavigationStyle.GreenBerry" parent="@style/Widget.Design.BottomNavigationView">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_g_b</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_text_g_b</item>
+    </style>
+    <style name="standard_navigationDrawerStyle.GreenBerry" parent="@style/Widget.Design.NavigationView">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_g_b</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_text_g_b</item>
+    </style>
+    <style name="standard_cardViewOneStyle.GreenBerry" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/primaryLightColor</item>
+    </style>
+    <style name="standard_cardViewTwoStyle.GreenBerry" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/secondaryColor</item>
+    </style>
+
     <!--End of Green Berry Theme-->
 
     <!--Start of Yellow Blue Theme-->
@@ -56,7 +112,11 @@
     <style name="standard_fabStyle.YellowBlue" parent="@style/Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/primaryColorYB</item>
     </style>
-    <style name="standard_bottomNavigationStyle.YellowBlue" parent="@style/Widget.Design.FloatingActionButton">
+    <style name="standard_bottomNavigationStyle.YellowBlue" parent="@style/Widget.Design.BottomNavigationView">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_y_b</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_text_y_b</item>
+    </style>
+    <style name="standard_navigationDrawerStyle.YellowBlue" parent="@style/Widget.Design.NavigationView">
         <item name="itemIconTint">@drawable/bottom_nav_selector_y_b</item>
         <item name="itemTextColor">@drawable/bottom_nav_selector_text_y_b</item>
     </style>
@@ -78,6 +138,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="ButtonStyle_zero" parent="@style/Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_zero_background</item>
+    </style>
     <style name="ButtonStyle_one" parent="@style/Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_one_background</item>
     </style>
