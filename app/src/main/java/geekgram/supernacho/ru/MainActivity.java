@@ -39,6 +39,8 @@ import java.util.Locale;
 
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
@@ -58,8 +60,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
         setTheme(new AppSharedPreferences(this).getSavedTheme());
         initView();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void initPhotosArrays() {

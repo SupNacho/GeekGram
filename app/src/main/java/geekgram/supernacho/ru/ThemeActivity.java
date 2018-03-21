@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener{
     private AppSharedPreferences prefs;
@@ -24,11 +27,21 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
         prefs = new AppSharedPreferences(this);
         setTheme(prefs.getSavedTheme());
         initView();
         initNavDrawer();
         initUI();
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void initUI() {
