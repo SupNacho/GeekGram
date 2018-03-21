@@ -5,9 +5,10 @@
     android:id="@+id/card_view_one"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/primaryLightColor"
+    style="?attr/cardViewOneStyle"
     app:cardCornerRadius="16dp"
     app:cardUseCompatPadding="true"
+    android:padding="8dp"
     android:layout_margin="8dp">
 
     <android.support.constraint.ConstraintLayout

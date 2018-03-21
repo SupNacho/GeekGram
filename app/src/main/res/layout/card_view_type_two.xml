@@ -5,9 +5,10 @@
     android:id="@+id/card_view_one"
     android:layout_width="180dp"
     android:layout_height="180dp"
-    app:cardBackgroundColor="@color/secondaryLightColor"
+    style="?attr/cardViewTwoStyle"
     app:cardCornerRadius="16dp"
     app:cardUseCompatPadding="true"
+    android:padding="8dp"
     android:layout_margin="8dp">
 
     <android.support.constraint.ConstraintLayout

@@ -3,7 +3,6 @@ package geekgram.supernacho.ru;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -40,6 +39,8 @@ import java.util.Locale;
 
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
@@ -55,20 +56,21 @@ public class MainActivity extends AppCompatActivity
     private Fragment favoriteFragment;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        requestReadPermission();
-        requestWritePermission();
-        initPhotosArrays();
-        initNavDrawer();
-        initFragment();
-        initPageAdapter();
-        initViewPager();
-        initTabLayout();
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+        setTheme(new AppSharedPreferences(this).getSavedTheme());
+        initView();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void initPhotosArrays() {
@@ -76,11 +78,7 @@ public class MainActivity extends AppCompatActivity
         favPhotos = new ArrayList<>();
         boolean isFav;
         for (int i = 0; i < 3; i++) {
-            if (i % 3 == 0) {
-                isFav = true;
-            } else {
-                isFav = false;
-            }
+            isFav = (i % 3) == 0;
             photos.add(new PhotoModel(isFav, null));
         }
         for (PhotoModel photo : photos) {
@@ -163,6 +161,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_main);
 
 
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_main);
+        requestReadPermission();
+        requestWritePermission();
+        initPhotosArrays();
+        initNavDrawer();
+        initFragment();
+        initPageAdapter();
+        initViewPager();
+        initTabLayout();
     }
 
     public void dispatchTakepictureIntent(int actionCode) throws IOException {

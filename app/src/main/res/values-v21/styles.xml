@@ -5,4 +5,10 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="standart_AppStyle.YellowBlue" parent="AppTheme.NoActionBar">
+        <item name="android:colorPrimary"></item>
+        <item name="android:colorPrimaryDark"></item>
+        <item name="android:colorAccent"></item>
+    </style>
 </resources>

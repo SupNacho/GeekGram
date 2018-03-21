@@ -11,16 +11,50 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
-public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        View.OnClickListener{
+    private AppSharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_theme);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+        prefs = new AppSharedPreferences(this);
+        setTheme(prefs.getSavedTheme());
+        initView();
         initNavDrawer();
+        initUI();
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void initUI() {
+        Button buttonThemeLime = findViewById(R.id.button_theme_0);
+        buttonThemeLime.setOnClickListener(this);
+        Button buttonThemeGreen = findViewById(R.id.button_theme_1);
+        buttonThemeGreen.setOnClickListener(this);
+        Button buttonThemeYellowBlue = findViewById(R.id.button_theme_2);
+        buttonThemeYellowBlue.setOnClickListener(this);
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_theme);
     }
 
     private void initNavDrawer() {
@@ -39,6 +73,30 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
     }
 
     @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.button_theme_0:
+                prefs.saveThemeId(R.style.ThemeStandard_Lime);
+                setTheme(R.style.ThemeStandard_Lime);
+                break;
+            case R.id.button_theme_1:
+                prefs.saveThemeId(R.style.ThemeStandard_GreenBerry);
+                setTheme(R.style.ThemeStandard_GreenBerry);
+                break;
+            case R.id.button_theme_2:
+                prefs.saveThemeId(R.style.ThemeStandard_YellowBlue);
+                setTheme(R.style.ThemeStandard_YellowBlue);
+                break;
+                default:
+                    Toast.makeText(this, "No such Theme", Toast.LENGTH_LONG).show();
+                    break;
+        }
+        initView();
+        initNavDrawer();
+        initUI();
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -50,19 +108,14 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

@@ -1,6 +1,7 @@
 package geekgram.supernacho.ru;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
 import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
@@ -68,12 +72,22 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+        setTheme(new AppSharedPreferences(this).getSavedTheme());
         setContentView(R.layout.activity_fullscreen_photo);
-
         mVisible = true;
         initUI();
     }
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
 
     private void initUI() {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
