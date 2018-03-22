@@ -76,7 +76,6 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
                 .setDefaultFontPath("Roboto-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
-        setTheme(new AppSharedPreferences(this).getSavedTheme());
         setContentView(R.layout.activity_fullscreen_photo);
         mVisible = true;
         initUI();
