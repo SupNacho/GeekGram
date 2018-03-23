@@ -12,17 +12,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        View.OnClickListener{
+public class ThemeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
     private AppSharedPreferences prefs;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +44,6 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
         setTheme(prefs.getSavedTheme());
         initView();
         initNavDrawer();
-        initUI();
     }
 
 
@@ -44,37 +52,26 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    private void initUI() {
-        Button buttonThemeLime = findViewById(R.id.button_theme_0);
-        buttonThemeLime.setOnClickListener(this);
-        Button buttonThemeGreen = findViewById(R.id.button_theme_1);
-        buttonThemeGreen.setOnClickListener(this);
-        Button buttonThemeYellowBlue = findViewById(R.id.button_theme_2);
-        buttonThemeYellowBlue.setOnClickListener(this);
-    }
-
     private void initView() {
         setContentView(R.layout.activity_theme);
+        ButterKnife.bind(this);
     }
 
     private void initNavDrawer() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_theme);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
+    @OnClick({R.id.button_theme_0, R.id.button_theme_1, R.id.button_theme_2})
+    public void onClickButton(View view) {
+        switch (view.getId()) {
             case R.id.button_theme_0:
                 prefs.saveThemeId(R.style.ThemeStandard_Lime);
                 setTheme(R.style.ThemeStandard_Lime);
@@ -87,18 +84,17 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
                 prefs.saveThemeId(R.style.ThemeStandard_YellowBlue);
                 setTheme(R.style.ThemeStandard_YellowBlue);
                 break;
-                default:
-                    Toast.makeText(this, "No such Theme", Toast.LENGTH_LONG).show();
-                    break;
+            default:
+                Toast.makeText(this, "No such Theme", Toast.LENGTH_LONG).show();
+                break;
         }
+
         initView();
         initNavDrawer();
-        initUI();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -126,7 +122,6 @@ public class ThemeActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         NavigationDrawerSwitch.switchIt(new WeakReference<Context>(this), item.getItemId());
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

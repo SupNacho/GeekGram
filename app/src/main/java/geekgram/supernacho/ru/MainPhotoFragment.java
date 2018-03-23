@@ -17,6 +17,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
 
 
@@ -27,11 +31,19 @@ public class MainPhotoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FrameLayout frameLayout;
     private Fragment allPhotoFragment;
     private Fragment dbFragment;
     private Fragment netFragment;
-    private FloatingActionButton fab;
+
+    @BindView(R.id.containerFragment)
+    FrameLayout frameLayout;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    @BindView(R.id.navigation)
+    BottomNavigationView navigation;
+
+    private Unbinder unbinder;
+
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -79,26 +91,25 @@ public class MainPhotoFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_photo, container, false);
-        Log.d("++//","Atached " + this.getTag());
+        unbinder = ButterKnife.bind(this, view);
         initFragments();
         initUI(view);
         return view;
     }
 
     private void initUI(View view) {
-        frameLayout = view.findViewById(R.id.containerFragment);
-        BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
-        fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
                                    @Override
                                    public void onClick(View view) {
                                        try {
-                                           ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                                           if (getContext() != null) {
+                                               ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                                           }
                                        } catch (IOException e){
                                            Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
                                        }
@@ -113,4 +124,9 @@ public class MainPhotoFragment extends Fragment {
         netFragment = PhotosFromNetFragment.newInstance(null, null);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
+    }
 }

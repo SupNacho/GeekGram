@@ -37,6 +37,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -50,7 +52,18 @@ public class MainActivity extends AppCompatActivity
     public static final int WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE = 2;
 
     private String currentPhotoPath;
-    private ViewPager viewPager;
+
+    @BindView(R.id.vp_container)
+    ViewPager viewPager;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+
     private PhotoFragmentsAdapter photoFragmentsPageAdapter;
     private Fragment mainFragment;
     private Fragment favoriteFragment;
@@ -87,7 +100,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initTabLayout() {
-        TabLayout tabLayout = findViewById(R.id.tabs);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
@@ -128,11 +140,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initViewPager() {
-        viewPager = findViewById(R.id.container);
         viewPager.setAdapter(photoFragmentsPageAdapter);
-        Log.d("++//", "All ph: " + R.layout.fragment_allphoto + "\n" +
-                "DB ph: " + R.layout.fragment_db + "\n Net ph: " + R.layout.fragment_net + "\n Main: " +
-        R.layout.fragment_main_photo);
     }
 
     private void initPageAdapter() {
@@ -147,16 +155,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initNavDrawer() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_main);
 
@@ -165,6 +169,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initView() {
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         requestReadPermission();
         requestWritePermission();
         initPhotosArrays();
@@ -234,7 +239,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -269,7 +273,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         NavigationDrawerSwitch.switchIt(new WeakReference<Context>(this), item.getItemId());
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

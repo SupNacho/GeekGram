@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -28,7 +30,10 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    private View mContentView;
+
+    @BindView(R.id.fullscreen_content)
+    View mContentView;
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -41,7 +46,14 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
+
+    @BindView(R.id.fullscreen_content_controls)
+    View mControlsView;
+    @BindView(R.id.view_fav_button)
+    ImageButton favButton;
+
+    private boolean isFavorite;
+
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -77,6 +89,7 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_fullscreen_photo);
+        ButterKnife.bind(this);
         mVisible = true;
         initUI();
     }
@@ -89,28 +102,21 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
 
 
     private void initUI() {
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
             }
         });
-        findViewById(R.id.view_fav_button).setOnTouchListener(mDelayHideTouchListener);
+        favButton.setOnTouchListener(mDelayHideTouchListener);
+        favButton.setOnClickListener(this);
         Intent intent = getIntent();
         String stringUri = intent.getStringExtra(IMG_URI);
-        boolean isFavorite = intent.getBooleanExtra(IS_FAVORITE, false);
+        isFavorite = intent.getBooleanExtra(IS_FAVORITE, false);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
         Picasso.get().load(imgUri).into(imgView);
-//        imgView.setImageURI(imgUri);
-        ImageButton favButton = findViewById(R.id.view_fav_button);
-        if (isFavorite) {
-            favButton.setImageResource(R.drawable.ic_favorites_on);
-        } else {
-            favButton.setImageResource(R.drawable.ic_favorites_off);
-        }
+        setFavButtonStateImg();
     }
 
     @Override
@@ -164,10 +170,19 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.view_fav_button:
-                // TODO: 13.03.2018 Установка и даление из избранных при просмотре
+                isFavorite = !isFavorite;
+                setFavButtonStateImg();
                 break;
             default:
                 Toast.makeText(this, "No such button", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setFavButtonStateImg() {
+        if (isFavorite) {
+            favButton.setImageResource(R.drawable.ic_favorites_on);
+        } else {
+            favButton.setImageResource(R.drawable.ic_favorites_off);
         }
     }
 }
