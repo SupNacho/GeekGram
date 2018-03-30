@@ -86,7 +86,7 @@ public class AllPhotoFragment extends Fragment implements PhotoInterface {
     }
 
     public void addPhoto(Uri photoUri){
-        photos.add(new PhotoModel(false, photoUri));
+        photos.add(new PhotoModel(false, photoUri.toString()));
         Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo added successfully", Snackbar.LENGTH_SHORT).show();
     }
 

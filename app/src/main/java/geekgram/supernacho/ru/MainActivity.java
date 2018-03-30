@@ -21,12 +21,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,17 +43,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.presenters.MainPresenter;
+import geekgram.supernacho.ru.presenters.MainView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener {
+public class MainActivity extends MvpAppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener,
+        MainView{
 
     public static final int CAMERA_CAPTURE = 1;
     public static final int READ_EXT_STORAGE_PERMISSION_REQUEST_CODE = 1;
     public static final int WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE = 2;
-
-    private String currentPhotoPath;
 
     @BindView(R.id.vp_container)
     ViewPager viewPager;
@@ -69,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     private Fragment favoriteFragment;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
+
+    @InjectPresenter
+    MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,12 +186,13 @@ public class MainActivity extends AppCompatActivity
         initTabLayout();
     }
 
-    public void dispatchTakepictureIntent(int actionCode) throws IOException {
+    public void dispatchTakePictureIntent(int actionCode) throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             try {
-                photoFile = createImageFile();
+                photoFile = presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DCIM), "Camera");
             } catch (IOException ex) {
                 Toast.makeText(this, "Error occurred while creating the File!", Toast.LENGTH_SHORT).show();
                 return;
@@ -193,38 +200,21 @@ public class MainActivity extends AppCompatActivity
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
                         BuildConfig.APPLICATION_ID + ".provider",
-                        createImageFile());
+                        presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DCIM), "Camera"));
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, actionCode);
             }
         }
     }
 
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
-        Log.d("++//", "Storage: " + storageDir.getAbsolutePath());
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        Log.d("++//", "Img: " + image.getAbsolutePath());
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
-            Log.d("++//", "Result: " + currentPhotoPath);
+            String currentPhotoPath = presenter.addPhoto();
+            Log.d("++", currentPhotoPath);
             if (currentPhotoPath != null) {
                 Uri imageUri = Uri.parse(currentPhotoPath);
-                Fragment allPhotoFragment = mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO);
-                ((AllPhotoFragment) allPhotoFragment).addPhoto(imageUri);
                 MediaScannerConnection.scanFile(MainActivity.this,
                         new String[]{imageUri.getPath()}, null,
                         new MediaScannerConnection.OnScanCompletedListener() {

@@ -118,7 +118,7 @@ public class FavoritesFragment extends Fragment implements PhotoInterface{
     }
 
     public void addPhoto(Uri photoUri){
-        photos.add(new PhotoModel(false, photoUri));
+        photos.add(new PhotoModel(false, photoUri.toString()));
         Snackbar.make(recyclerView, "Photo added successfully", Snackbar.LENGTH_SHORT).show();
     }
 

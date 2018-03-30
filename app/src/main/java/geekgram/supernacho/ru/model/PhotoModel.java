@@ -1,16 +1,13 @@
 package geekgram.supernacho.ru.model;
 
 
-import android.net.Uri;
-
-
 public class PhotoModel {
     private boolean isFavorite;
-    private Uri photoSrc;
+    private String photoSrc;
 
-    public PhotoModel(boolean isFavorite, Uri photoSrc) {
+    public PhotoModel(boolean isFavorite, String photoSrcUri) {
         this.isFavorite = isFavorite;
-        this.photoSrc = photoSrc;
+        this.photoSrc = photoSrcUri;
     }
 
     public boolean isFavorite() {
@@ -21,7 +18,7 @@ public class PhotoModel {
         isFavorite = favorite;
     }
 
-    public Uri getPhotoSrc() {
+    public String getPhotoSrc() {
         return photoSrc;
     }
 }
