@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import geekgram.supernacho.ru.MainView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
@@ -54,15 +55,5 @@ public class MainPresenter extends MvpPresenter<MainView> implements IMainPresen
         );
         currentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
-    }
-
-    @Override
-    public List<PhotoModel> getPhotos() {
-        return photos;
-    }
-
-    @Override
-    public List<PhotoModel> getFavPhotos() {
-        return favPhotos;
     }
 }

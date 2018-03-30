@@ -1,41 +1,50 @@
 package geekgram.supernacho.ru.presenters;
 
+import android.util.Log;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import geekgram.supernacho.ru.FragmentView;
+import geekgram.supernacho.ru.FavFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
 
 @InjectViewState
-public class AllPhotoPresenter extends MvpPresenter<FragmentView> implements IFragmentPresenter {
+public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter,
+        Observer{
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
+    private List<PhotoModel> favPhotos;
     private IRepository repository;
 
-    public AllPhotoPresenter() {
+    public FavPhotoPresenter() {
         this.repository = Repository.getInstance();
+        repository.addObserver(this);
         this.photos = repository.getPhotos();
+        this.favPhotos = new ArrayList<>();
+        favoriteIsChanged();
+        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
     public void addPhoto(String photoUriString) {
-        repository.addPhoto(false, photoUriString);
-//        photos.add(new PhotoModel(false, photoUriString));
-        getViewState().updateRecyclerViewAdapter();
+        throw new RuntimeException("no adding foto feature from Favorites");
     }
 
     @Override
     public void viewPhoto(int pos) {
         PhotoModel pm;
-        if (photos != null && photos.size() > pos){
-            if ((pm = photos.get(pos)) != null && pm.getPhotoSrc() != null){
-                getViewState().startViewPhoto(pos, pm.getPhotoSrc(), pm.isFavorite());
+        if (favPhotos != null && favPhotos.size() > pos) {
+            if ((pm = favPhotos.get(pos)) != null && pm.getPhotoSrc() != null) {
+                int tmpPos = photos.indexOf(pm);
+                getViewState().startViewPhoto(tmpPos, pm.getPhotoSrc().toString(), pm.isFavorite());
             }
         }
     }
@@ -43,9 +52,9 @@ public class AllPhotoPresenter extends MvpPresenter<FragmentView> implements IFr
     @Override
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
-            photoTmp = photos.remove(pos);
-            tempPos = pos;
-            repository.remove(pos);
+            photoTmp = favPhotos.get(pos);
+            tempPos = photos.indexOf(photoTmp);
+            repository.remove(tempPos);
             getViewState().updateRecyclerViewAdapter();
         }
     }
@@ -54,6 +63,7 @@ public class AllPhotoPresenter extends MvpPresenter<FragmentView> implements IFr
     public void undoDeletion() {
         photos.add(tempPos, photoTmp);
         repository.addPhoto(tempPos, photoTmp);
+        favoriteIsChanged();
         getViewState().updateRecyclerViewAdapter();
     }
 
@@ -64,14 +74,30 @@ public class AllPhotoPresenter extends MvpPresenter<FragmentView> implements IFr
 
     @Override
     public List<PhotoModel> getFavPhotos() {
-        return new ArrayList<>();
+        return favPhotos;
     }
 
     @Override
     public void favoriteIsChanged() {
-//        favPhotos.clear();
-//        for (PhotoModel photo : photos) {
-//            if (photo.isFavorite()) favPhotos.add(photo);
-//        }
+        favPhotos.clear();
+        for (PhotoModel photo : photos) {
+            if (photo.isFavorite()) favPhotos.add(photo);
+        }
+    }
+
+    @Override
+    public void setFavorite(PhotoModel pm) {
+        pm.setFavorite(!pm.isFavorite());
+        if (pm.isFavorite()) favPhotos.add(pm);
+        else favPhotos.remove(pm);
+//        getViewState().updateRecyclerViewAdapter();
+        repository.favoriteIsChanged();
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        Log.d("++", "FavUpdates");
+        favoriteIsChanged();
+        getViewState().updateRecyclerViewAdapter();
     }
 }

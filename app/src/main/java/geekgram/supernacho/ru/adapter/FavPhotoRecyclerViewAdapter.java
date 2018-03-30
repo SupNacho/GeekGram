@@ -15,15 +15,16 @@ import java.util.List;
 
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
 public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private PhotoInterface photoFragment;
+    private IFragmentPresenter presenter;
 
-    public FavPhotoRecyclerViewAdapter(List<PhotoModel> photos, List<PhotoModel> favPhotos, WeakReference<PhotoInterface> fragmentWeakReference) {
-        this.photos = photos;
-        this.favPhotos = favPhotos;
+    public FavPhotoRecyclerViewAdapter(IFragmentPresenter presenter, WeakReference<PhotoInterface> fragmentWeakReference) {
+        this.presenter = presenter;
+        this.favPhotos = presenter.getFavPhotos();
         if (fragmentWeakReference.get() != null) {
             this.photoFragment = fragmentWeakReference.get(); // потом заменю на DI, это у нас в следующем курсе
         }
@@ -70,8 +71,7 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 ((ViewCardTwo) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        photoModel.setFavorite(!photoModel.isFavorite());
-                        favListManage(photoModel);
+                        presenter.setFavorite(photoModel);
                         notifyDataSetChanged();
                     }
                 });
@@ -94,20 +94,11 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 ((ViewCardOne) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        photoModel.setFavorite(!photoModel.isFavorite());
-                        favListManage(photoModel);
+                        presenter.setFavorite(photoModel);
                         notifyDataSetChanged();
                     }
                 });
                 break;
-        }
-    }
-
-    private void favListManage(PhotoModel photoModel) {
-        if (photoModel.isFavorite()) {
-            favPhotos.add(photoModel);
-        } else {
-            favPhotos.remove(photoModel);
         }
     }
 
@@ -134,7 +125,7 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    photoFragment.viewPhoto(getLayoutPosition());
+                    presenter.viewPhoto(getLayoutPosition());
                 }
             });
         }
@@ -158,7 +149,7 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    photoFragment.viewPhoto(getLayoutPosition());
+                    presenter.viewPhoto(getLayoutPosition());
                 }
             });
         }

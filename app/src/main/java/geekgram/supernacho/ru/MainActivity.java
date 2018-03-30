@@ -33,18 +33,14 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.MainPresenter;
-import geekgram.supernacho.ru.presenters.MainView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -211,17 +207,14 @@ public class MainActivity extends MvpAppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_CAPTURE && resultCode == RESULT_OK) {
-            String currentPhotoPath = presenter.addPhoto();
-            Log.d("++", currentPhotoPath);
-            if (currentPhotoPath != null) {
-                Uri imageUri = Uri.parse(currentPhotoPath);
+            Uri imageUri = Uri.parse(presenter.addPhoto());
                 MediaScannerConnection.scanFile(MainActivity.this,
                         new String[]{imageUri.getPath()}, null,
                         new MediaScannerConnection.OnScanCompletedListener() {
                             public void onScanCompleted(String path, Uri uri) {
                             }
                         });
-            }
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

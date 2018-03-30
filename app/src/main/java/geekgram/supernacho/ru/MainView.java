@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru.presenters;
+package geekgram.supernacho.ru;
 
 import com.arellomobile.mvp.MvpView;
 
