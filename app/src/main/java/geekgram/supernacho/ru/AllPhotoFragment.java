@@ -16,17 +16,14 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.lang.ref.WeakReference;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import geekgram.supernacho.ru.adapter.PhotoInterface;
 import geekgram.supernacho.ru.adapter.AllPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.AllPhotoPresenter;
 
 
-public class AllPhotoFragment extends MvpAppCompatFragment implements PhotoInterface, AllPhotoFragmentView {
+public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFragmentView {
 
     public static final String IMG_URI = "img_uri";
     public static final String IMG_POS = "img_pos";
@@ -68,19 +65,9 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements PhotoInter
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
-        adapter = new AllPhotoRecyclerViewAdapter(presenter, new WeakReference<PhotoInterface>(this));
+        adapter = new AllPhotoRecyclerViewAdapter(presenter);
         recyclerView.setAdapter(adapter);
 
-    }
-
-    public void viewPhoto(int pos){
-        presenter.viewPhoto(pos);
-    }
-
-
-    public void addPhoto(Uri photoUri){
-        presenter.addPhoto(photoUri.toString());
-        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo added successfully", Snackbar.LENGTH_SHORT).show();
     }
 
     public void deletePhoto(final int pos){

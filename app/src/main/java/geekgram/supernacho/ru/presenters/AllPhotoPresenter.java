@@ -25,14 +25,9 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     public AllPhotoPresenter() {
         this.repository = Repository.getInstance();
-        this.photos = repository.getPhotos();
-    }
-
-    @Override
-    public void addPhoto(String photoUriString) {
-        repository.addPhoto(false, photoUriString);
-//        photos.add(new PhotoModel(false, photoUriString));
-        getViewState().updateRecyclerViewAdapter();
+        repository.addObserver(this);
+        this.photos = new ArrayList<>();
+        photos.addAll(repository.getPhotos());
     }
 
     @Override
@@ -45,21 +40,23 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         }
     }
 
+    public void  deleteDialog(int pos){
+        getViewState().deletePhoto(pos);
+    }
     @Override
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
-            photoTmp = photos.remove(pos);
+            photoTmp = photos.get(pos);
             tempPos = pos;
             repository.remove(pos);
-            getViewState().updateRecyclerViewAdapter();
+            syncPhotoList();
         }
     }
 
     @Override
     public void undoDeletion() {
-        photos.add(tempPos, photoTmp);
         repository.addPhoto(tempPos, photoTmp);
-        getViewState().updateRecyclerViewAdapter();
+        syncPhotoList();
     }
 
     @Override
@@ -74,20 +71,25 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Override
     public void favoriteIsChanged() {
-//        favPhotos.clear();
-//        for (PhotoModel photo : photos) {
-//            if (photo.isFavorite()) favPhotos.add(photo);
-//        }
+        // TODO: 31.03.2018 Вероятно надо разнести интерфейс фрагментов общегие фото и избранное на два разных. 
     }
 
     @Override
     public void setFavorite(PhotoModel pm) {
         pm.setFavorite(!pm.isFavorite());
+        repository.favoriteIsChanged();
     }
 
     @Override
     public void update(Observable observable, Object o) {
         Log.d("++", "AllPhoto Updated");
+        syncPhotoList();
         getViewState().updateRecyclerViewAdapter();
+    }
+
+    @Override
+    public void syncPhotoList(){
+        photos.clear();
+        photos.addAll(repository.getPhotos());
     }
 }

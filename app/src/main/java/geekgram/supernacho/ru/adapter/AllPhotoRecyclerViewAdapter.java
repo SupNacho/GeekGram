@@ -10,7 +10,6 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import geekgram.supernacho.ru.R;
@@ -20,16 +19,12 @@ import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    private PhotoInterface photoFragment;
     private IFragmentPresenter presenter;
 
-    public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter, WeakReference<PhotoInterface> fragmentWeakReference) {
+    public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
         this.favPhotos = presenter.getFavPhotos();
-        if (fragmentWeakReference.get() != null) {
-            this.photoFragment = fragmentWeakReference.get(); // потом заменю на DI, это у нас в следующем курсе
-        }
     }
 
     @Override
@@ -43,10 +38,10 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         View view;
         switch (viewType) {
             case 0:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_two, null);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_two, parent, false);
                 return new ViewCardTwo(view);
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_one, null);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_one, parent, false);
                 return new ViewCardOne(view);
         }
     }
@@ -120,7 +115,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    photoFragment.deletePhoto(getLayoutPosition());
+                    presenter.deleteDialog(getLayoutPosition());
                     return false;
                 }
             });
@@ -144,7 +139,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    photoFragment.deletePhoto(getLayoutPosition());
+                    presenter.deleteDialog(getLayoutPosition());
                     return false;
                 }
             });
