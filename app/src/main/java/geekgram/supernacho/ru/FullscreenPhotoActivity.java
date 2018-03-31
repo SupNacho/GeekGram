@@ -14,25 +14,33 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import geekgram.supernacho.ru.presenters.FullScreenPresenter;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static geekgram.supernacho.ru.AllPhotoFragment.IMG_POS;
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
 import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
 
-public class FullscreenPhotoActivity extends AppCompatActivity implements View.OnClickListener {
+public class FullscreenPhotoActivity extends MvpAppCompatActivity implements FullScreenView{
     private static final boolean AUTO_HIDE = true;
 
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    private int pos;
 
-    @BindView(R.id.fullscreen_content)
-    View mContentView;
+    @BindView(R.id.fullscreen_content) View mContentView;
+
+    @InjectPresenter
+    FullScreenPresenter presenter;
 
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -109,10 +117,10 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
             }
         });
         favButton.setOnTouchListener(mDelayHideTouchListener);
-        favButton.setOnClickListener(this);
         Intent intent = getIntent();
         String stringUri = intent.getStringExtra(IMG_URI);
         isFavorite = intent.getBooleanExtra(IS_FAVORITE, false);
+        pos = intent.getIntExtra(IMG_POS, -1);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
         Picasso.get().load(imgUri).into(imgView);
@@ -166,16 +174,11 @@ public class FullscreenPhotoActivity extends AppCompatActivity implements View.O
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    @Override
+    @OnClick(R.id.view_fav_button)
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.view_fav_button:
                 isFavorite = !isFavorite;
                 setFavButtonStateImg();
-                break;
-            default:
-                Toast.makeText(this, "No such button", Toast.LENGTH_SHORT).show();
-        }
+                presenter.favoriteIsChanged(pos);
     }
 
     private void setFavButtonStateImg() {
