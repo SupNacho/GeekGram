@@ -54,12 +54,20 @@ public class Repository extends Observable implements IRepository {
 
     @Override
     public synchronized void addObserver(Observer o) {
+        observers.add(o);
         super.addObserver(o);
-//        observers.add(o);
     }
 
     @Override
     public void favoriteIsChanged() {
         notifyObservers();
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update(this, null);
+        }
+        super.notifyObservers();
     }
 }
