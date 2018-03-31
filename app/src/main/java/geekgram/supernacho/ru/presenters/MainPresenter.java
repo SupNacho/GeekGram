@@ -21,23 +21,15 @@ public class MainPresenter extends MvpPresenter<MainView> implements IMainPresen
 
     private String currentPhotoPath;
     private IRepository repository;
-    private List<PhotoModel> photos;
-    private List<PhotoModel> favPhotos;
 
     public MainPresenter() {
         repository = Repository.getInstance();
-        photos = repository.getPhotos();
-        favPhotos = new ArrayList<>();
-        for (PhotoModel photo : photos) {
-            if (photo.isFavorite()) favPhotos.add(photo);
-        }
     }
 
     @Override
     public String addPhoto() {
         if (currentPhotoPath != null) {
             repository.addPhoto(false, currentPhotoPath);
-            photos.add(0, new PhotoModel(false, currentPhotoPath));
             return currentPhotoPath;
         }
         return currentPhotoPath;

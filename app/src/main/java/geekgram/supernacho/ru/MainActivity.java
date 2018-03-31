@@ -118,7 +118,11 @@ public class MainActivity extends MvpAppCompatActivity
                         break;
                     case 1:
                         if ((favoriteFragment) != null) {
-                            ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
+                            if (((FavoritesFragment) favoriteFragment).getAdapter() != null) {
+                                ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Adapter is NULL", Toast.LENGTH_LONG).show();
+                            }
                         }
                         break;
                     default:
