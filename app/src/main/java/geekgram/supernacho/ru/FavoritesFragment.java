@@ -4,7 +4,6 @@ package geekgram.supernacho.ru;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,13 +15,9 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
-import geekgram.supernacho.ru.adapter.PhotoInterface;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.FavPhotoPresenter;
 
@@ -31,7 +26,7 @@ import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
 import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
 
 
-public class FavoritesFragment extends MvpAppCompatFragment implements PhotoInterface, FavFragmentView{
+public class FavoritesFragment extends MvpAppCompatFragment implements FavFragmentView{
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -83,12 +78,8 @@ public class FavoritesFragment extends MvpAppCompatFragment implements PhotoInte
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
-        adapter = new FavPhotoRecyclerViewAdapter(presenter, new WeakReference<PhotoInterface>(this));
+        adapter = new FavPhotoRecyclerViewAdapter(presenter);
         recyclerView.setAdapter(adapter);
-    }
-
-    public void viewPhoto(int pos){
-       presenter.viewPhoto(pos);
     }
 
     public FavPhotoRecyclerViewAdapter getAdapter() {

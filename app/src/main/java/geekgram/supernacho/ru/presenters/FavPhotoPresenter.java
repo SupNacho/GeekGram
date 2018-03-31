@@ -27,15 +27,11 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public FavPhotoPresenter() {
         this.repository = Repository.getInstance();
         repository.addObserver(this);
-        this.photos = repository.getPhotos();
+        this.photos = new ArrayList<>();
+        this.photos.addAll(repository.getPhotos());
         this.favPhotos = new ArrayList<>();
         favoriteIsChanged();
         getViewState().updateRecyclerViewAdapter();
-    }
-
-    @Override
-    public void addPhoto(String photoUriString) {
-        throw new RuntimeException("no adding foto feature from Favorites");
     }
 
     @Override
@@ -44,9 +40,14 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         if (favPhotos != null && favPhotos.size() > pos) {
             if ((pm = favPhotos.get(pos)) != null && pm.getPhotoSrc() != null) {
                 int tmpPos = photos.indexOf(pm);
-                getViewState().startViewPhoto(tmpPos, pm.getPhotoSrc().toString(), pm.isFavorite());
+                getViewState().startViewPhoto(tmpPos, pm.getPhotoSrc(), pm.isFavorite());
             }
         }
+    }
+
+    @Override
+    public void deleteDialog(int pos) {
+        getViewState().deletePhoto(pos);
     }
 
     @Override
@@ -55,16 +56,18 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
             photoTmp = favPhotos.get(pos);
             tempPos = photos.indexOf(photoTmp);
             repository.remove(tempPos);
-            getViewState().updateRecyclerViewAdapter();
+            syncPhotoList();
+//            getViewState().updateRecyclerViewAdapter();
         }
     }
 
     @Override
     public void undoDeletion() {
-        photos.add(tempPos, photoTmp);
+//        photos.add(tempPos, photoTmp);
         repository.addPhoto(tempPos, photoTmp);
         favoriteIsChanged();
-        getViewState().updateRecyclerViewAdapter();
+        syncPhotoList();
+//        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
@@ -90,14 +93,21 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         pm.setFavorite(!pm.isFavorite());
         if (pm.isFavorite()) favPhotos.add(pm);
         else favPhotos.remove(pm);
-//        getViewState().updateRecyclerViewAdapter();
         repository.favoriteIsChanged();
     }
 
     @Override
     public void update(Observable observable, Object o) {
         Log.d("++", "FavUpdates");
+        syncPhotoList();
         favoriteIsChanged();
         getViewState().updateRecyclerViewAdapter();
+    }
+
+    @Override
+    public void syncPhotoList() {
+        photos.clear();
+        photos.addAll(repository.getPhotos());
+        favoriteIsChanged();
     }
 }
