@@ -7,7 +7,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -108,7 +107,7 @@ public class MainPhotoFragment extends Fragment {
                                    public void onClick(View view) {
                                        try {
                                            if (getContext() != null) {
-                                               ((MainActivity) getContext()).dispatchTakepictureIntent(CAMERA_CAPTURE);
+                                               ((MainActivity) getContext()).dispatchTakePictureIntent(CAMERA_CAPTURE);
                                            }
                                        } catch (IOException e){
                                            Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
