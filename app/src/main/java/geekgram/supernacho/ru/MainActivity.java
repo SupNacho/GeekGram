@@ -105,43 +105,6 @@ public class MainActivity extends MvpAppCompatActivity
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                int pos = tab.getPosition();
-                switch (pos) {
-                    case 0:
-                        if ((mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO)) != null) {
-                            ((AllPhotoFragment) mainFragment.getChildFragmentManager().findFragmentByTag(FragmentTags.ALL_PHOTO))
-                                    .getAdapter().notifyDataSetChanged();
-                        }
-                        break;
-                    case 1:
-                        if ((favoriteFragment) != null) {
-                            if (((FavoritesFragment) favoriteFragment).getAdapter() != null) {
-                                ((FavoritesFragment) favoriteFragment).getAdapter().notifyDataSetChanged();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Adapter is NULL", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        break;
-                    default:
-                        Toast.makeText(getApplicationContext(), "No such tab", Toast.LENGTH_LONG).show();
-                        break;
-
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
         tabLayout.getTabAt(0).select();
     }
 
@@ -314,4 +277,3 @@ public class MainActivity extends MvpAppCompatActivity
     }
 }
 // TODO: 16.03.2018 выставить размер фото в пикассо
-// TODO: 16.03.2018 разобраться с работой фото на АсусZ5 (как вариант блокировать поворот)

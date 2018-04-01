@@ -26,12 +26,26 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
 
     public FavPhotoPresenter() {
         this.repository = Repository.getInstance();
-        repository.addObserver(this);
         this.photos = new ArrayList<>();
         this.photos.addAll(repository.getPhotos());
         this.favPhotos = new ArrayList<>();
         favoriteIsChanged();
         getViewState().updateRecyclerViewAdapter();
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        Log.d("++", "FirstAttach FP Presenter");
+        super.onFirstViewAttach();
+        getViewState().initUI();
+        repository.addObserver(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("++", "FP Presenter Destroyed");
+        super.onDestroy();
+        repository.deleteObserver(this);
     }
 
     @Override
@@ -57,17 +71,14 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
             tempPos = photos.indexOf(photoTmp);
             repository.remove(tempPos);
             syncPhotoList();
-//            getViewState().updateRecyclerViewAdapter();
         }
     }
 
     @Override
     public void undoDeletion() {
-//        photos.add(tempPos, photoTmp);
         repository.addPhoto(tempPos, photoTmp);
         favoriteIsChanged();
         syncPhotoList();
-//        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override

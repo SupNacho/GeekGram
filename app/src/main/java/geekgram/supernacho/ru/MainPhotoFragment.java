@@ -95,11 +95,11 @@ public class MainPhotoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_photo, container, false);
         unbinder = ButterKnife.bind(this, view);
         initFragments();
-        initUI(view);
+        initUI();
         return view;
     }
 
-    private void initUI(View view) {
+    private void initUI() {
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
         fab.setOnClickListener(new View.OnClickListener() {

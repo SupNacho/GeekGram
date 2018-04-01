@@ -18,6 +18,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import geekgram.supernacho.ru.adapter.AllPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.AllPhotoPresenter;
@@ -28,8 +29,10 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     public static final String IMG_URI = "img_uri";
     public static final String IMG_POS = "img_pos";
     public static final String IS_FAVORITE = "is_favorite";
+
     private OnFragmentInteractionListener mListener;
     @BindView(R.id.all_photo_fragment_recycler_view) RecyclerView recyclerView;
+    private Unbinder unbinder;
     private AllPhotoRecyclerViewAdapter adapter;
 
     @InjectPresenter
@@ -53,13 +56,13 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_allphoto, container, false);
-        ButterKnife.bind(this, view);
-        initUI(view);
+        unbinder = ButterKnife.bind(this, view);
+        initUI();
         return view;
     }
 
-    private void initUI(View view) {
-//        recyclerView = view.findViewById(R.id.all_photo_fragment_recycler_view);
+    @Override
+    public void initUI() {
         if (recyclerView != null){
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -136,5 +139,11 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
         viewIntent.putExtra(IMG_URI, uri);
         viewIntent.putExtra(IS_FAVORITE, isFavorite);
         startActivity(viewIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

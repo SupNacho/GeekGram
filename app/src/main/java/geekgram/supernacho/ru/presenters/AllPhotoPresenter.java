@@ -25,9 +25,23 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     public AllPhotoPresenter() {
         this.repository = Repository.getInstance();
-        repository.addObserver(this);
         this.photos = new ArrayList<>();
         photos.addAll(repository.getPhotos());
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        Log.d("++", "FirstAttach AP Presenter");
+        super.onFirstViewAttach();
+        getViewState().initUI();
+        repository.addObserver(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("++", "AP Presenter Destroyed");
+        super.onDestroy();
+        repository.deleteObserver(this);
     }
 
     @Override

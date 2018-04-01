@@ -5,6 +5,7 @@ import java.util.Observer;
 
 public interface IRepository {
     void addObserver(Observer o);
+    void deleteObserver(Observer o);
     void addPhoto(boolean isFavorite, String uriString);
     void addPhoto(int pos, PhotoModel pm);
     void remove(int pos);

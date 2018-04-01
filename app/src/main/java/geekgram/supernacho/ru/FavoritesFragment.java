@@ -17,6 +17,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.FavPhotoPresenter;
@@ -35,6 +36,7 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
     private String mParam2;
 
     @BindView(R.id.favorites_fragment_recycler_view) RecyclerView recyclerView;
+    private Unbinder unbinder;
     private FavPhotoRecyclerViewAdapter adapter;
 
     @InjectPresenter
@@ -67,12 +69,13 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         initUI();
         return view;
     }
 
-    private void initUI() {
+    @Override
+    public void initUI() {
         if (recyclerView != null){
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -121,5 +124,11 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
         viewIntent.putExtra(IMG_URI, uri);
         viewIntent.putExtra(IS_FAVORITE, isFavorite);
         startActivity(viewIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

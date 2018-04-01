@@ -59,12 +59,19 @@ public class Repository extends Observable implements IRepository {
     }
 
     @Override
+    public synchronized void deleteObserver(Observer o) {
+        observers.remove(o);
+        super.deleteObserver(o);
+    }
+
+    @Override
     public void favoriteIsChanged() {
         notifyObservers();
     }
 
     @Override
     public void notifyObservers() {
+        Log.d("++","Observers size = " + observers.size());
         for (Observer observer : observers) {
             observer.update(this, null);
         }
