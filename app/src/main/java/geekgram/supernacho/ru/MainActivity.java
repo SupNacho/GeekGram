@@ -22,7 +22,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -33,14 +32,17 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
-import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.MainPresenter;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -66,8 +68,6 @@ public class MainActivity extends MvpAppCompatActivity
     private PhotoFragmentsAdapter photoFragmentsPageAdapter;
     private Fragment mainFragment;
     private Fragment favoriteFragment;
-    private List<PhotoModel> photos;
-    private List<PhotoModel> favPhotos;
 
     @InjectPresenter
     MainPresenter presenter;
@@ -88,24 +88,11 @@ public class MainActivity extends MvpAppCompatActivity
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    private void initPhotosArrays() {
-        photos = new ArrayList<>();
-        favPhotos = new ArrayList<>();
-        boolean isFav;
-        for (int i = 0; i < 3; i++) {
-            isFav = (i % 3) == 0;
-            photos.add(new PhotoModel(isFav, null));
-        }
-        for (PhotoModel photo : photos) {
-            if (photo.isFavorite()) favPhotos.add(photo);
-        }
-    }
-
     private void initTabLayout() {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         tabLayout.setTabTextColors(R.color.secondaryTextColor, R.color.primaryTextColor);
-        tabLayout.getTabAt(0).select();
+        Objects.requireNonNull(tabLayout.getTabAt(0)).select();
     }
 
     private void initViewPager() {
@@ -141,7 +128,6 @@ public class MainActivity extends MvpAppCompatActivity
         ButterKnife.bind(this);
         requestReadPermission();
         requestWritePermission();
-        initPhotosArrays();
         initNavDrawer();
         initFragment();
         initPageAdapter();
@@ -149,26 +135,51 @@ public class MainActivity extends MvpAppCompatActivity
         initTabLayout();
     }
 
-    public void dispatchTakePictureIntent(int actionCode) throws IOException {
+    public void dispatchTakePictureIntent(int actionCode){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
+            final File[] photoFile = {null};
             try {
-                photoFile = presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DCIM), "Camera");
+                presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DCIM), "Camera")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<File>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                Timber
+                                        .tag("++")
+                                        .d("PhotoFile on subscribe");
+                            }
+
+                            @Override
+                            public void onSuccess(File file) {
+                                photoFile[0] = file;
+                                Timber
+                                        .tag("++")
+                                        .d("PhotoFile = %s", photoFile[0].getName());
+                                if (photoFile[0] != null) {
+                                    Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
+                                            BuildConfig.APPLICATION_ID + ".provider",
+                                            photoFile[0]);
+                                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                                    startActivityForResult(takePictureIntent, actionCode);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                errorToast("Error occurred while creating the File!" + e);
+                            }
+                        });
             } catch (IOException ex) {
-                Toast.makeText(this, "Error occurred while creating the File!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
-                        BuildConfig.APPLICATION_ID + ".provider",
-                        presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DCIM), "Camera"));
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, actionCode);
+                errorToast("Error occurred while creating the File!");
             }
         }
+    }
+
+    private void errorToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -177,9 +188,7 @@ public class MainActivity extends MvpAppCompatActivity
             Uri imageUri = Uri.parse(presenter.addPhoto());
                 MediaScannerConnection.scanFile(MainActivity.this,
                         new String[]{imageUri.getPath()}, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            public void onScanCompleted(String path, Uri uri) {
-                            }
+                        (path, uri) -> {
                         });
 
         }
@@ -207,22 +216,19 @@ public class MainActivity extends MvpAppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-        // TODO: 06.03.2018 implement fragment interaction
+        //        // TODO: 06.03.2018 implement fragment interaction
     }
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        NavigationDrawerSwitch.switchIt(new WeakReference<Context>(this), item.getItemId());
+        NavigationDrawerSwitch.switchIt(new WeakReference<>(this), item.getItemId());
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -250,30 +256,21 @@ public class MainActivity extends MvpAppCompatActivity
         switch (requestCode) {
             case READ_EXT_STORAGE_PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("++", "READ GRANTED");
+                    Timber.d("READ GRANTED");
                 } else {
-                    Log.d("++", "READ NOT GRANTED");
+                    Timber.d("READ NOT GRANTED");
                 }
                 break;
             case WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("++", "WRITE GRANTED");
+                    Timber.d("WRITE GRANTED");
                 } else {
-                    Log.d("++", "WRITE NOT GRANTED");
+                    Timber.d("WRITE NOT GRANTED");
                 }
                 break;
             default:
-                Log.w("++", "Request code not found");
+                Timber.w("Request code not found");
                 break;
         }
     }
-
-    public List<PhotoModel> getPhotos() {
-        return photos;
-    }
-
-    public List<PhotoModel> getFavPhotos() {
-        return favPhotos;
-    }
 }
-// TODO: 16.03.2018 выставить размер фото в пикассо

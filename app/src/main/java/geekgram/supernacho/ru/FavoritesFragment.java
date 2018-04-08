@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,7 @@ import butterknife.Unbinder;
 import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.FavPhotoPresenter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_POS;
 import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
@@ -72,6 +74,11 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
         unbinder = ButterKnife.bind(this, view);
         initUI();
         return view;
+    }
+
+    @ProvidePresenter
+    public FavPhotoPresenter providePresenter(){
+        return new FavPhotoPresenter(AndroidSchedulers.mainThread());
     }
 
     @Override

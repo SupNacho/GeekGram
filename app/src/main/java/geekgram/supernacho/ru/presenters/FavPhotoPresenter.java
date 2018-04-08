@@ -1,51 +1,93 @@
 package geekgram.supernacho.ru.presenters;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import geekgram.supernacho.ru.FavFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 @InjectViewState
-public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter,
-        Observer{
+public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter{
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private IRepository repository;
+    private io.reactivex.Observer<List<PhotoModel>> photoObserver;
+    private Scheduler uiScheduler;
 
-    public FavPhotoPresenter() {
+    public FavPhotoPresenter(Scheduler scheduler) {
         this.repository = Repository.getInstance();
+        this.uiScheduler = scheduler;
         this.photos = new ArrayList<>();
-        this.photos.addAll(repository.getPhotos());
         this.favPhotos = new ArrayList<>();
-        favoriteIsChanged();
-        getViewState().updateRecyclerViewAdapter();
+        photoObserver = new Observer<List<PhotoModel>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Timber
+                        .tag("++")
+                        .d("on Subscribe");
+            }
+
+            @Override
+            public void onNext(List<PhotoModel> photoModels) {
+                photos.clear();
+                photos.addAll(photoModels);
+                favoriteIsChanged();
+                getViewState().updateRecyclerViewAdapter();
+            }
+
+            @SuppressLint("TimberArgCount")
+            @Override
+            public void onError(Throwable e) {
+                Timber
+                        .tag("++")
+                        .d(e, "on Error: %s");
+            }
+
+            @Override
+            public void onComplete() {
+                Timber
+                        .tag("++")
+                        .d("on Complete");
+                getViewState().updateRecyclerViewAdapter();
+            }
+        };
     }
 
     @Override
     protected void onFirstViewAttach() {
-        Log.d("++", "FirstAttach FP Presenter");
+        Timber
+                .tag("++")
+                .d("FirstAttach FP Presenter");
         super.onFirstViewAttach();
         getViewState().initUI();
-        repository.addObserver(this);
+        repository
+                .getObservablePhotos()
+                .subscribeOn(Schedulers.io())
+                .observeOn(uiScheduler)
+                .subscribe(photoObserver);
+        repository.getStartData();
     }
 
     @Override
     public void onDestroy() {
-        Log.d("++", "FP Presenter Destroyed");
+        Timber
+                .tag("++")
+                .d("FP Presenter Destroyed");
         super.onDestroy();
-        repository.deleteObserver(this);
     }
 
     @Override
@@ -70,7 +112,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
             photoTmp = favPhotos.get(pos);
             tempPos = photos.indexOf(photoTmp);
             repository.remove(tempPos);
-            syncPhotoList();
         }
     }
 
@@ -78,7 +119,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public void undoDeletion() {
         repository.addPhoto(tempPos, photoTmp);
         favoriteIsChanged();
-        syncPhotoList();
     }
 
     @Override
@@ -105,20 +145,5 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         if (pm.isFavorite()) favPhotos.add(pm);
         else favPhotos.remove(pm);
         repository.favoriteIsChanged();
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
-        Log.d("++", "FavUpdates");
-        syncPhotoList();
-        favoriteIsChanged();
-        getViewState().updateRecyclerViewAdapter();
-    }
-
-    @Override
-    public void syncPhotoList() {
-        photos.clear();
-        photos.addAll(repository.getPhotos());
-        favoriteIsChanged();
     }
 }

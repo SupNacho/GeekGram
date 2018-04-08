@@ -1,47 +1,90 @@
 package geekgram.supernacho.ru.presenters;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import geekgram.supernacho.ru.AllPhotoFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 @InjectViewState
-public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implements IFragmentPresenter,
-        Observer {
+public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
     private IRepository repository;
+    private io.reactivex.Observer<List<PhotoModel>> photoObserver;
+    private Scheduler uiScheduler;
 
-    public AllPhotoPresenter() {
+    public AllPhotoPresenter(Scheduler scheduler) {
         this.repository = Repository.getInstance();
         this.photos = new ArrayList<>();
-        photos.addAll(repository.getPhotos());
+        this.uiScheduler = scheduler;
+        photoObserver = new Observer<List<PhotoModel>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Timber
+                        .tag("++")
+                        .d("on Subscribe");
+            }
+
+            @Override
+            public void onNext(List<PhotoModel> photoModels) {
+                photos.clear();
+                photos.addAll(photoModels);
+                getViewState().updateRecyclerViewAdapter();
+            }
+
+            @SuppressLint("TimberArgCount")
+            @Override
+            public void onError(Throwable e) {
+                Timber
+                        .tag("++")
+                        .d(e, "on Error %s");
+            }
+
+            @Override
+            public void onComplete() {
+                Timber
+                        .tag("++")
+                        .d("on Complete");
+                getViewState().updateRecyclerViewAdapter();
+            }
+        };
     }
 
     @Override
     protected void onFirstViewAttach() {
-        Log.d("++", "FirstAttach AP Presenter");
+        Timber
+                .tag("++")
+                .d("FirstAttach AP Presenter");
         super.onFirstViewAttach();
         getViewState().initUI();
-        repository.addObserver(this);
+        repository
+                .getObservablePhotos()
+                .subscribeOn(Schedulers.io())
+                .observeOn(uiScheduler)
+                .subscribe(photoObserver);
+        repository.getStartData();
     }
 
     @Override
     public void onDestroy() {
-        Log.d("++", "AP Presenter Destroyed");
+        Timber
+                .tag("++")
+                .d("AP Presenter Destroyed");
         super.onDestroy();
-        repository.deleteObserver(this);
     }
 
     @Override
@@ -63,14 +106,12 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
             photoTmp = photos.get(pos);
             tempPos = pos;
             repository.remove(pos);
-            syncPhotoList();
         }
     }
 
     @Override
     public void undoDeletion() {
         repository.addPhoto(tempPos, photoTmp);
-        syncPhotoList();
     }
 
     @Override
@@ -85,25 +126,12 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Override
     public void favoriteIsChanged() {
-        // TODO: 31.03.2018 Вероятно надо разнести интерфейс фрагментов общегие фото и избранное на два разных. 
+        // TODO: 31.03.2018 Вероятно надо разнести интерфейс фрагментов общие фото и избранное на два разных.
     }
 
     @Override
     public void setFavorite(PhotoModel pm) {
         pm.setFavorite(!pm.isFavorite());
         repository.favoriteIsChanged();
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
-        Log.d("++", "AllPhoto Updated");
-        syncPhotoList();
-        getViewState().updateRecyclerViewAdapter();
-    }
-
-    @Override
-    public void syncPhotoList(){
-        photos.clear();
-        photos.addAll(repository.getPhotos());
     }
 }

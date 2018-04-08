@@ -14,5 +14,4 @@ public interface IFragmentPresenter {
     List<PhotoModel> getFavPhotos();
     void setFavorite(PhotoModel pm);
     void favoriteIsChanged();
-    void syncPhotoList();
 }

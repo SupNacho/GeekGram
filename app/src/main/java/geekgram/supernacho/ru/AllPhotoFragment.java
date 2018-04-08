@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +23,7 @@ import butterknife.Unbinder;
 import geekgram.supernacho.ru.adapter.AllPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.presenters.AllPhotoPresenter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFragmentView {
@@ -59,6 +61,11 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
         unbinder = ButterKnife.bind(this, view);
         initUI();
         return view;
+    }
+
+    @ProvidePresenter
+    public AllPhotoPresenter providePresenter(){
+        return new AllPhotoPresenter(AndroidSchedulers.mainThread());
     }
 
     @Override
