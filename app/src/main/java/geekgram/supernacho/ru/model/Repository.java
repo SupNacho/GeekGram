@@ -3,6 +3,8 @@ package geekgram.supernacho.ru.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -52,9 +54,10 @@ public class Repository implements IRepository {
     public List<PhotoModel> getPhotos() {
         return photos;
     }
+
     @Override
-    public io.reactivex.Observable<List<PhotoModel>> getObservablePhotos() {
-        return photosObservable;
+    public Flowable<List<PhotoModel>> getObservablePhotos() {
+        return photosObservable.toFlowable(BackpressureStrategy.BUFFER);
     }
 
     public void getStartData() {

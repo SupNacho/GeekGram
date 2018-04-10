@@ -1,9 +1,9 @@
 package geekgram.supernacho.ru.presenters;
 
-import android.annotation.SuppressLint;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,8 @@ import geekgram.supernacho.ru.AllPhotoFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
-import io.reactivex.Observer;
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -24,34 +23,61 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     private int tempPos;
     private List<PhotoModel> photos;
     private IRepository repository;
-    private io.reactivex.Observer<List<PhotoModel>> photoObserver;
+    private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
+    private Subscription subscription;
 
     public AllPhotoPresenter(Scheduler scheduler) {
         this.repository = Repository.getInstance();
         this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
-        photoObserver = new Observer<List<PhotoModel>>() {
+    }
+
+    @Override
+    public void attachView(AllPhotoFragmentView view) {
+        super.attachView(view);
+        Timber
+                .tag("++")
+                .d("AP AttachView");
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        repository.getStartData();
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        Timber
+                .tag("++")
+                .d("FirstAttach AP Presenter");
+        super.onFirstViewAttach();
+        getViewState().initUI();
+        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(Subscription s) {
+                subscription = s;
+                subscription.request(1);
                 Timber
                         .tag("++")
-                        .d("on Subscribe");
+                        .d("APPresenter on Subscribe");
             }
 
             @Override
             public void onNext(List<PhotoModel> photoModels) {
+                Timber.tag("++").d("Size %d", photoModels.size());
                 photos.clear();
                 photos.addAll(photoModels);
                 getViewState().updateRecyclerViewAdapter();
+                subscription.request(1);
             }
 
-            @SuppressLint("TimberArgCount")
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable t) {
                 Timber
                         .tag("++")
-                        .d(e, "on Error %s");
+                        .d(t.getMessage(), "on Error %s");
             }
 
             @Override
@@ -62,21 +88,13 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
                 getViewState().updateRecyclerViewAdapter();
             }
         };
-    }
-
-    @Override
-    protected void onFirstViewAttach() {
-        Timber
-                .tag("++")
-                .d("FirstAttach AP Presenter");
-        super.onFirstViewAttach();
-        getViewState().initUI();
         repository
                 .getObservablePhotos()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(uiScheduler)
                 .subscribe(photoObserver);
-        repository.getStartData();
+//        getViewState().updateRecyclerViewAdapter();
+//        repository.getStartData();
     }
 
     @Override
@@ -85,6 +103,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
                 .tag("++")
                 .d("AP Presenter Destroyed");
         super.onDestroy();
+        subscription.cancel();
     }
 
     @Override

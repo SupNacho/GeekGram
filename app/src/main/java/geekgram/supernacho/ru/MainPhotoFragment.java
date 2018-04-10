@@ -12,9 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -102,19 +99,11 @@ public class MainPhotoFragment extends Fragment {
     private void initUI() {
         navigation.setOnNavigationItemSelectedListener(onNavigationSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_all);
-        fab.setOnClickListener(new View.OnClickListener() {
-                                   @Override
-                                   public void onClick(View view) {
-                                       try {
-                                           if (getContext() != null) {
-                                               ((MainActivity) getContext()).dispatchTakePictureIntent(CAMERA_CAPTURE);
-                                           }
-                                       } catch (IOException e){
-                                           Toast.makeText(getContext(), "File not found!", Toast.LENGTH_SHORT).show();
-                                       }
-                                   }
-                               }
-        );
+        fab.setOnClickListener(view -> {
+            if (getContext() != null) {
+                ((MainActivity) getContext()).dispatchTakePictureIntent(CAMERA_CAPTURE);
+            }
+        });
     }
 
     private void initFragments() {

@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
+import org.reactivestreams.Subscription;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +14,8 @@ import geekgram.supernacho.ru.FavFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
-import io.reactivex.Observer;
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -25,20 +26,48 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private IRepository repository;
-    private io.reactivex.Observer<List<PhotoModel>> photoObserver;
+    private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
+    private Subscription subscription;
 
     public FavPhotoPresenter(Scheduler scheduler) {
         this.repository = Repository.getInstance();
         this.uiScheduler = scheduler;
         this.photos = new ArrayList<>();
         this.favPhotos = new ArrayList<>();
-        photoObserver = new Observer<List<PhotoModel>>() {
+
+    }
+
+    @Override
+    public void attachView(FavFragmentView view) {
+        super.attachView(view);
+        Timber
+                .tag("++")
+                .d("FP AttachView");
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        repository.getStartData();
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        Timber
+                .tag("++")
+                .d("FirstAttach FP Presenter");
+        super.onFirstViewAttach();
+        getViewState().initUI();
+        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(Subscription s) {
+                subscription = s;
+                subscription.request(1);
                 Timber
                         .tag("++")
-                        .d("on Subscribe");
+                        .d("Fav Presenter on Subscribe");
+                repository.getStartData();
             }
 
             @Override
@@ -47,14 +76,14 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
                 photos.addAll(photoModels);
                 favoriteIsChanged();
                 getViewState().updateRecyclerViewAdapter();
+                subscription.request(1);
             }
 
-            @SuppressLint("TimberArgCount")
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable t) {
                 Timber
                         .tag("++")
-                        .d(e, "on Error: %s");
+                        .d(t.getMessage(), "on Error: %s");
             }
 
             @Override
@@ -65,22 +94,16 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
                 getViewState().updateRecyclerViewAdapter();
             }
         };
-    }
-
-    @Override
-    protected void onFirstViewAttach() {
-        Timber
-                .tag("++")
-                .d("FirstAttach FP Presenter");
-        super.onFirstViewAttach();
-        getViewState().initUI();
         repository
                 .getObservablePhotos()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(uiScheduler)
                 .subscribe(photoObserver);
+//        getViewState().updateRecyclerViewAdapter();
         repository.getStartData();
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -88,6 +111,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
                 .tag("++")
                 .d("FP Presenter Destroyed");
         super.onDestroy();
+        subscription.cancel();
     }
 
     @Override
