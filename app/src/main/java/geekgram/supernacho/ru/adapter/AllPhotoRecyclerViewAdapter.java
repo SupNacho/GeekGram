@@ -54,6 +54,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 if (photoModel.getPhotoSrc() != null) {
                     Picasso.get()
                             .load(photoModel.getPhotoSrc())
+                            .placeholder(R.drawable.ic_photo)
                             .fit()
                             .centerInside()
                             .into(((ViewCardTwo) holder).imageView);
@@ -77,6 +78,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 if (photoModel.getPhotoSrc() != null) {
                     Picasso.get()
                             .load(photoModel.getPhotoSrc())
+                            .placeholder(R.drawable.ic_photo)
                             .fit()
                             .centerInside()
                             .into(((ViewCardOne) holder).imageView);

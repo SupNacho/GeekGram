@@ -28,11 +28,14 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,6 +56,8 @@ public class MainActivity extends MvpAppCompatActivity
     public static final int CAMERA_CAPTURE = 1;
     public static final int READ_EXT_STORAGE_PERMISSION_REQUEST_CODE = 1;
     public static final int WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE = 2;
+
+    @Inject App app;
 
     @BindView(R.id.vp_container)
     ViewPager viewPager;
@@ -75,6 +80,7 @@ public class MainActivity extends MvpAppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getInstance().getAppComponent().inject(this);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("Roboto-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
@@ -133,6 +139,13 @@ public class MainActivity extends MvpAppCompatActivity
         initPageAdapter();
         initViewPager();
         initTabLayout();
+    }
+
+    @ProvidePresenter
+    public MainPresenter providerMainPresenter(){
+        MainPresenter presenter = new MainPresenter();
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
     }
 
     public void dispatchTakePictureIntent(int actionCode){

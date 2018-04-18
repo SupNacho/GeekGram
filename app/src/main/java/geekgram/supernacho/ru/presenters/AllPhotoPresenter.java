@@ -8,6 +8,8 @@ import org.reactivestreams.Subscription;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import geekgram.supernacho.ru.AllPhotoFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
@@ -22,13 +24,13 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
-    private IRepository repository;
     private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
     private Subscription subscription;
 
+    @Inject IRepository repository;
+
     public AllPhotoPresenter(Scheduler scheduler) {
-        this.repository = Repository.getInstance();
         this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
@@ -39,11 +41,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         Timber
                 .tag("++")
                 .d("AP AttachView");
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         repository.getStartData();
     }
 
@@ -151,6 +148,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     @Override
     public void setFavorite(PhotoModel pm) {
         pm.setFavorite(!pm.isFavorite());
-        repository.favoriteIsChanged();
+        repository.favoriteIsChanged(pm);
     }
 }

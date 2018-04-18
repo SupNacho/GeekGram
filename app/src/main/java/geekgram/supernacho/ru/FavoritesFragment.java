@@ -78,7 +78,9 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
 
     @ProvidePresenter
     public FavPhotoPresenter providePresenter(){
-        return new FavPhotoPresenter(AndroidSchedulers.mainThread());
+        FavPhotoPresenter presenter = new FavPhotoPresenter(AndroidSchedulers.mainThread());
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
     }
 
     @Override

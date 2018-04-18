@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import geekgram.supernacho.ru.App;
 import geekgram.supernacho.ru.MainView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.Repository;
@@ -18,10 +21,9 @@ import io.reactivex.Single;
 public class MainPresenter extends MvpPresenter<MainView> implements IMainPresenter{
 
     private String currentPhotoPath;
-    private IRepository repository;
+    @Inject IRepository repository;
 
     public MainPresenter() {
-        repository = Repository.getInstance();
     }
 
     @Override

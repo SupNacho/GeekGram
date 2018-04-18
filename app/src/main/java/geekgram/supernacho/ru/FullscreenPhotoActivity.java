@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -73,20 +74,12 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         }
     };
     private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
+    private final Runnable mHideRunnable = () -> hide();
+    private final View.OnTouchListener mDelayHideTouchListener = (view, motionEvent) -> {
+        if (AUTO_HIDE) {
+            delayedHide(AUTO_HIDE_DELAY_MILLIS);
         }
-    };
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
+        return false;
     };
 
     @Override
@@ -102,6 +95,13 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         initUI();
     }
 
+    @ProvidePresenter
+    public FullScreenPresenter providePresenter(){
+        FullScreenPresenter presenter = new FullScreenPresenter();
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
+    }
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -110,12 +110,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
 
 
     private void initUI() {
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+        mContentView.setOnClickListener(view -> toggle());
         favButton.setOnTouchListener(mDelayHideTouchListener);
         Intent intent = getIntent();
         String stringUri = intent.getStringExtra(IMG_URI);

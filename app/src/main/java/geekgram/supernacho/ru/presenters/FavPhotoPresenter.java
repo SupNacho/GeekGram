@@ -10,6 +10,8 @@ import org.reactivestreams.Subscription;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import geekgram.supernacho.ru.FavFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
@@ -25,13 +27,12 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     private int tempPos;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    private IRepository repository;
+    @Inject IRepository repository;
     private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
     private Subscription subscription;
 
     public FavPhotoPresenter(Scheduler scheduler) {
-        this.repository = Repository.getInstance();
         this.uiScheduler = scheduler;
         this.photos = new ArrayList<>();
         this.favPhotos = new ArrayList<>();
@@ -44,11 +45,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         Timber
                 .tag("++")
                 .d("FP AttachView");
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         repository.getStartData();
     }
 
@@ -168,6 +164,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         pm.setFavorite(!pm.isFavorite());
         if (pm.isFavorite()) favPhotos.add(pm);
         else favPhotos.remove(pm);
-        repository.favoriteIsChanged();
+        repository.favoriteIsChanged(pm);
     }
 }
