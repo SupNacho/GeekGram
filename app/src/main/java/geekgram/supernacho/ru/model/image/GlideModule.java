@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru.model.image.android;
+package geekgram.supernacho.ru.model.image;
 
 import com.bumptech.glide.module.AppGlideModule;
 

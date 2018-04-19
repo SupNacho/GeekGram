@@ -91,6 +91,7 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new FavPhotoRecyclerViewAdapter(presenter);
+        App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
     }
 

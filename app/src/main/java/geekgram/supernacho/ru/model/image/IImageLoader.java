@@ -1,4 +1,7 @@
-package geekgram.supernacho.ru.model.image.android;
+package geekgram.supernacho.ru.model.image;
 
-public interface IImageLoader {
+import android.support.annotation.Nullable;
+
+public interface IImageLoader<T> {
+    void loadInto(@Nullable String url, T container);
 }

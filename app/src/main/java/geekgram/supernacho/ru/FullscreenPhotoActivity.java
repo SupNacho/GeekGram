@@ -17,11 +17,13 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.squareup.picasso.Picasso;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.FullScreenPresenter;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -42,6 +44,9 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
 
     @InjectPresenter
     FullScreenPresenter presenter;
+
+    @Inject
+    IImageLoader<ImageView> imageLoader;
 
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -89,6 +94,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
                 .setDefaultFontPath("Roboto-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
+        App.getInstance().getAppComponent().inject(this);
         setContentView(R.layout.activity_fullscreen_photo);
         ButterKnife.bind(this);
         mVisible = true;
@@ -118,7 +124,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         pos = intent.getIntExtra(IMG_POS, -1);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
-        Picasso.get().load(imgUri).into(imgView);
+        imageLoader.loadInto(imgUri.getPath(), imgView);
         setFavButtonStateImg();
     }
 

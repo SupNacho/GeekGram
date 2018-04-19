@@ -78,6 +78,7 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new AllPhotoRecyclerViewAdapter(presenter);
+        App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
 
     }
