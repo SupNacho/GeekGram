@@ -10,17 +10,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.AllPhotoFragmentView;
+import geekgram.supernacho.ru.PhotosFromDbFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
-import geekgram.supernacho.ru.model.Repository;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implements IFragmentPresenter {
+public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
@@ -30,17 +29,17 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Inject IRepository repository;
 
-    public AllPhotoPresenter(Scheduler scheduler) {
+    public PhotosFromDbPresenter(Scheduler scheduler) {
         this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
 
     @Override
-    public void attachView(AllPhotoFragmentView view) {
+    public void attachView(PhotosFromDbFragmentView view) {
         super.attachView(view);
         Timber
                 .tag("++")
-                .d("AP AttachView");
+                .d("BDP AttachView");
         repository.getStartData();
     }
 
@@ -48,7 +47,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     protected void onFirstViewAttach() {
         Timber
                 .tag("++")
-                .d("FirstAttach AP Presenter");
+                .d("FirstAttach DBP Presenter");
         super.onFirstViewAttach();
         getViewState().initUI();
         photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
@@ -58,7 +57,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
                 subscription.request(1);
                 Timber
                         .tag("++")
-                        .d("APPresenter on Subscribe");
+                        .d("DBPPresenter on Subscribe");
             }
 
             @Override
@@ -90,15 +89,13 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
                 .subscribeOn(Schedulers.computation())
                 .observeOn(uiScheduler)
                 .subscribe(photoObserver);
-//        getViewState().updateRecyclerViewAdapter();
-//        repository.getStartData();
     }
 
     @Override
     public void onDestroy() {
         Timber
                 .tag("++")
-                .d("AP Presenter Destroyed");
+                .d("DBP Presenter Destroyed");
         super.onDestroy();
         subscription.cancel();
     }
@@ -142,7 +139,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Override
     public void favoriteIsChanged() {
-        // TODO: 31.03.2018 Вероятно надо разнести интерфейс фрагментов общие фото и избранное на два разных.
+
     }
 
     @Override

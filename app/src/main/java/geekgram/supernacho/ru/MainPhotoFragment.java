@@ -108,7 +108,7 @@ public class MainPhotoFragment extends Fragment {
 
     private void initFragments() {
         allPhotoFragment = AllPhotoFragment.newInstance();
-        dbFragment = PhotosFromDbFragment.newInstance(null, null);
+        dbFragment = PhotosFromDbFragment.newInstance();
         netFragment = PhotosFromNetFragment.newInstance(null, null);
     }
 

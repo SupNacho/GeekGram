@@ -17,14 +17,14 @@ import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
-public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private IFragmentPresenter presenter;
     @Inject
     IImageLoader<ImageView> imageLoader;
 
-    public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter) {
+    public PhotoFromDbRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
         this.favPhotos = presenter.getFavPhotos();
