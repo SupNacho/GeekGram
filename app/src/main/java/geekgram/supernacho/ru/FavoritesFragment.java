@@ -78,7 +78,9 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
 
     @ProvidePresenter
     public FavPhotoPresenter providePresenter(){
-        return new FavPhotoPresenter(AndroidSchedulers.mainThread());
+        FavPhotoPresenter presenter = new FavPhotoPresenter(AndroidSchedulers.mainThread());
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
     }
 
     @Override
@@ -89,6 +91,7 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new FavPhotoRecyclerViewAdapter(presenter);
+        App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
     }
 

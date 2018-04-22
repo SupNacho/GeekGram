@@ -5,22 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.squareup.picasso.Picasso;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.FullScreenPresenter;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -41,6 +41,9 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
 
     @InjectPresenter
     FullScreenPresenter presenter;
+
+    @Inject
+    IImageLoader<ImageView> imageLoader;
 
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -73,20 +76,12 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         }
     };
     private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
+    private final Runnable mHideRunnable = () -> hide();
+    private final View.OnTouchListener mDelayHideTouchListener = (view, motionEvent) -> {
+        if (AUTO_HIDE) {
+            delayedHide(AUTO_HIDE_DELAY_MILLIS);
         }
-    };
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
+        return false;
     };
 
     @Override
@@ -96,10 +91,18 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
                 .setDefaultFontPath("Roboto-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
+        App.getInstance().getAppComponent().inject(this);
         setContentView(R.layout.activity_fullscreen_photo);
         ButterKnife.bind(this);
         mVisible = true;
         initUI();
+    }
+
+    @ProvidePresenter
+    public FullScreenPresenter providePresenter(){
+        FullScreenPresenter presenter = new FullScreenPresenter();
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
     }
 
 
@@ -110,12 +113,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
 
 
     private void initUI() {
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+        mContentView.setOnClickListener(view -> toggle());
         favButton.setOnTouchListener(mDelayHideTouchListener);
         Intent intent = getIntent();
         String stringUri = intent.getStringExtra(IMG_URI);
@@ -123,7 +121,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         pos = intent.getIntExtra(IMG_POS, -1);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
-        Picasso.get().load(imgUri).into(imgView);
+        imageLoader.loadInto(stringUri.startsWith("htt")? stringUri : imgUri.getPath(), imgView);
         setFavButtonStateImg();
     }
 

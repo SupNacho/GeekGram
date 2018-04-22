@@ -65,7 +65,9 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
 
     @ProvidePresenter
     public AllPhotoPresenter providePresenter(){
-        return new AllPhotoPresenter(AndroidSchedulers.mainThread());
+        AllPhotoPresenter presenter = new AllPhotoPresenter(AndroidSchedulers.mainThread());
+        App.getInstance().getAppComponent().inject(presenter);
+        return presenter;
     }
 
     @Override
@@ -76,6 +78,7 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new AllPhotoRecyclerViewAdapter(presenter);
+        App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
 
     }
@@ -91,12 +94,9 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         presenter.deletePhoto(pos);
-                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab), "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                presenter.undoDeletion();
-                            }
-                        }).show();
+                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab),
+                                "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo",
+                                view -> presenter.undoDeletion()).show();
                     }
                 })
                 .show();

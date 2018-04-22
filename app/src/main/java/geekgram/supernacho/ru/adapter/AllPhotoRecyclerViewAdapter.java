@@ -8,18 +8,21 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
+
+import javax.inject.Inject;
 
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
 public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     private IFragmentPresenter presenter;
+    @Inject
+    IImageLoader<ImageView> imageLoader;
 
     public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
@@ -52,11 +55,8 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         switch (holder.getItemViewType()) {
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
-                    Picasso.get()
-                            .load(photoModel.getPhotoSrc())
-                            .fit()
-                            .centerInside()
-                            .into(((ViewCardTwo) holder).imageView);
+                    imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
+
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
@@ -75,11 +75,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
-                    Picasso.get()
-                            .load(photoModel.getPhotoSrc())
-                            .fit()
-                            .centerInside()
-                            .into(((ViewCardOne) holder).imageView);
+                    imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardOne) holder).imageView);
                 }  else {
                     ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }

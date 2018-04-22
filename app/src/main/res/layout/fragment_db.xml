@@ -1,13 +1,16 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="geekgram.supernacho.ru.PhotosFromDbFragment">
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/db_photo_fragment"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="geekgram.supernacho.ru.AllPhotoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/db_photo_fragment_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="DB Fragment"/>
+        android:padding="16dp"/>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

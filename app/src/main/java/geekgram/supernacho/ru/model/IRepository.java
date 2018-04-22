@@ -11,7 +11,7 @@ public interface IRepository {
     void addPhoto(boolean isFavorite, String uriString);
     void addPhoto(int pos, PhotoModel pm);
     void remove(int pos);
-    void favoriteIsChanged();
+    void favoriteIsChanged(PhotoModel pm);
     Flowable<List<PhotoModel>> getObservablePhotos();
     List<PhotoModel> getPhotos();
 }
