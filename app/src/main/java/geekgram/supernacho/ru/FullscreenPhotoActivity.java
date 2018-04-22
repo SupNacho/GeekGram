@@ -5,14 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -124,7 +121,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         pos = intent.getIntExtra(IMG_POS, -1);
         Uri imgUri = Uri.parse(stringUri);
         ImageView imgView = (ImageView) mContentView;
-        imageLoader.loadInto(imgUri.getPath(), imgView);
+        imageLoader.loadInto(stringUri.startsWith("htt")? stringUri : imgUri.getPath(), imgView);
         setFavButtonStateImg();
     }
 

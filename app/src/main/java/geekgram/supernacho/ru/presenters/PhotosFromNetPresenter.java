@@ -11,120 +11,137 @@ import java.util.List;
 import javax.inject.Inject;
 
 import geekgram.supernacho.ru.PhotosFromDbFragmentView;
+import geekgram.supernacho.ru.PhotosFromNetFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
+import geekgram.supernacho.ru.model.NetRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.entity.recent.Datum;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView> implements IFragmentPresenter {
+public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentView> implements INetFragmentPresenter {
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
     private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
     private Subscription subscription;
+    private Disposable disposeRecent;
+    private Disposable disposeUser;
 
-    @Inject IRepository repository;
+    @Inject
+    NetRepository repository;
 
-    public PhotosFromDbPresenter(Scheduler scheduler) {
+    public PhotosFromNetPresenter(Scheduler scheduler) {
         this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
 
     @Override
-    public void attachView(PhotosFromDbFragmentView view) {
+    public void attachView(PhotosFromNetFragmentView view) {
         super.attachView(view);
         Timber
                 .tag("++")
-                .d("BDP AttachView");
-        repository.getStartData();
+                .d("NetP AttachView");
+//        repository.getStartData();
     }
 
     @Override
     protected void onFirstViewAttach() {
         Timber
                 .tag("++")
-                .d("FirstAttach DBP Presenter");
+                .d("FirstAttach NetP Presenter");
         super.onFirstViewAttach();
         getViewState().initUI();
-        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                subscription = s;
-                subscription.request(1);
-                Timber
-                        .tag("++")
-                        .d("DBPPresenter on Subscribe");
-            }
+//        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
+//            @Override
+//            public void onSubscribe(Subscription s) {
+//            subscription = s;
+//            subscription.request(1);
+//            Timber
+//                    .tag("++")
+//                    .d("NetPPresenter on Subscribe");
+//        }
+//
+//        @Override
+//        public void onNext(List<PhotoModel> photoModels) {
+//            Timber.tag("++").d("Size %d", photoModels.size());
+//            photos.clear();
+//            photos.addAll(photoModels);
+//            getViewState().updateRecyclerViewAdapter();
+//            subscription.request(1);
+//        }
+//
+//        @Override
+//        public void onError(Throwable t) {
+//            Timber
+//                    .tag("++")
+//                    .d(t.getMessage(), "on Error %s");
+//        }
+//
+//        @Override
+//        public void onComplete() {
+//            Timber
+//                    .tag("++")
+//                    .d("on Complete");
+//            getViewState().updateRecyclerViewAdapter();
+//        }
+//    };
+//        repository
+//                .getObservablePhotos()
+//                .subscribeOn(Schedulers.computation())
+//            .observeOn(uiScheduler)
+//                .subscribe(photoObserver);
+    }
 
-            @Override
-            public void onNext(List<PhotoModel> photoModels) {
-                Timber.tag("++").d("Size %d", photoModels.size());
-                photos.clear();
-                photos.addAll(photoModels);
-                getViewState().updateRecyclerViewAdapter();
-                subscription.request(1);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                Timber
-                        .tag("++")
-                        .d(t.getMessage(), "on Error %s");
-            }
-
-            @Override
-            public void onComplete() {
-                Timber
-                        .tag("++")
-                        .d("on Complete");
-                getViewState().updateRecyclerViewAdapter();
-            }
-        };
-        repository
-                .getObservablePhotos()
-                .subscribeOn(Schedulers.computation())
+    @Override
+    public void loadUserData(String token) {
+        disposeUser = repository.getUser(token)
+                .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
+                .subscribe(u -> getViewState()
+                        .loadUserData(u.getData().getProfilePicture(), u.getData().getFullName()));
+    }
+
+    @Override
+    public void loadUserRecent(String token) {
+        disposeRecent = repository.getUserRecentData(token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(uiScheduler)
+                .subscribe(ur -> {
+                    photos.clear();
+                    for (Datum datum : ur.getData()) {
+                        photos.add(new PhotoModel(false, datum.getImages().getStandardResolution().getUrl()));
+                    }
+                    getViewState().updateRecyclerViewAdapter();
+                });
     }
 
     @Override
     public void onDestroy() {
         Timber
                 .tag("++")
-                .d("DBP Presenter Destroyed");
+                .d("NetP Presenter Destroyed");
         super.onDestroy();
-        subscription.cancel();
+        disposeUser.dispose();
+        disposeRecent.dispose();
+//        subscription.cancel();
     }
 
     @Override
     public void viewPhoto(int pos) {
         PhotoModel pm;
-        if (photos != null && photos.size() > pos){
-            if ((pm = photos.get(pos)) != null && pm.getPhotoSrc() != null){
+        if (photos != null && photos.size() > pos) {
+            if ((pm = photos.get(pos)) != null && pm.getPhotoSrc() != null) {
                 getViewState().startViewPhoto(pos, pm.getPhotoSrc(), pm.isFavorite());
+            } else {
+                Timber.d("---- Fuckup with viewing photo: %d %s %s", pos, photos.get(pos).getPhotoSrc(), photos.get(pos).isFavorite());
             }
         }
-    }
-
-    public void  deleteDialog(int pos){
-        getViewState().deletePhoto(pos);
-    }
-    @Override
-    public void deletePhoto(int pos) {
-        if (photos != null && photos.size() > pos) {
-            photoTmp = photos.get(pos);
-            tempPos = pos;
-            repository.remove(pos);
-        }
-    }
-
-    @Override
-    public void undoDeletion() {
-        repository.addPhoto(tempPos, photoTmp);
     }
 
     @Override
@@ -145,6 +162,5 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     @Override
     public void setFavorite(PhotoModel pm) {
         pm.setFavorite(!pm.isFavorite());
-        repository.favoriteIsChanged(pm);
     }
 }

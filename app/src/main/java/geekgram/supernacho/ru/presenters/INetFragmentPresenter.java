@@ -4,14 +4,13 @@ import java.util.List;
 
 import geekgram.supernacho.ru.model.PhotoModel;
 
-public interface IFragmentPresenter {
+public interface INetFragmentPresenter {
 
     void viewPhoto(int pos);
-    void deletePhoto(int pos);
-    void undoDeletion();
-    void  deleteDialog(int pos);
     List<PhotoModel> getPhotos();
     List<PhotoModel> getFavPhotos();
     void setFavorite(PhotoModel pm);
     void favoriteIsChanged();
+    void loadUserData(String token);
+    void loadUserRecent(String token);
 }

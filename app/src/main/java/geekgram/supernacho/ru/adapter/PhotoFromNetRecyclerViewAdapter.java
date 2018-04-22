@@ -16,15 +16,17 @@ import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
+import geekgram.supernacho.ru.presenters.INetFragmentPresenter;
+import timber.log.Timber;
 
-public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    private IFragmentPresenter presenter;
+    private INetFragmentPresenter presenter;
     @Inject
     IImageLoader<ImageView> imageLoader;
 
-    public PhotoFromDbRecyclerViewAdapter(IFragmentPresenter presenter) {
+    public PhotoFromNetRecyclerViewAdapter(INetFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
         this.favPhotos = presenter.getFavPhotos();
@@ -108,13 +110,6 @@ public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<Recycle
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
-            });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -132,13 +127,6 @@ public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<Recycle
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
-            });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
