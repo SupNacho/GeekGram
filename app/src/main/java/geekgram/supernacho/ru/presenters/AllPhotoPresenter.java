@@ -11,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import geekgram.supernacho.ru.AllPhotoFragmentView;
+import geekgram.supernacho.ru.model.IImageCache;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.Repository;
@@ -28,7 +29,10 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     private Scheduler uiScheduler;
     private Subscription subscription;
 
-    @Inject IRepository repository;
+    @Inject
+    IRepository repository;
+    @Inject
+    IImageCache imageCache;
 
     public AllPhotoPresenter(Scheduler scheduler) {
         this.photos = new ArrayList<>();
@@ -87,11 +91,9 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         };
         repository
                 .getObservablePhotos()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
                 .subscribe(photoObserver);
-//        getViewState().updateRecyclerViewAdapter();
-//        repository.getStartData();
     }
 
     @Override

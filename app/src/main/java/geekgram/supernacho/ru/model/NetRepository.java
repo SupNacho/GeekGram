@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import geekgram.supernacho.ru.model.api.ApiService;
 import geekgram.supernacho.ru.model.entity.Data;
-import geekgram.supernacho.ru.model.entity.RealmImage;
 import geekgram.supernacho.ru.model.entity.User;
 import geekgram.supernacho.ru.model.entity.recent.UserRecent;
 import geekgram.supernacho.ru.utils.NetworkStatus;
 import io.reactivex.Observable;
-import io.realm.Realm;
 
 public class NetRepository {
     ApiService apiService;
