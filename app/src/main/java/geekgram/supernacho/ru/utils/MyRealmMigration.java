@@ -8,7 +8,7 @@ public class MyRealmMigration implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         RealmSchema schema = realm.getSchema();
-        if (oldVersion == 2){
+        if (oldVersion == 3){
             schema.create("RealmCachedImage")
                     .addField("url", String.class)
                     .addField("path", String.class);

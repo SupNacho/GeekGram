@@ -22,7 +22,7 @@ public class App extends Application {
         instance = this;
         Realm.init(this);
         RealmConfiguration configuration = new RealmConfiguration.Builder()
-                .name("geekgram")
+                .name("geekgram2")
                 .schemaVersion(2)
                 .migration(new MyRealmMigration())
                 .build();

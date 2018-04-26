@@ -2,9 +2,11 @@ package geekgram.supernacho.ru;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -56,6 +58,8 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
     TextView tvUserName;
     @BindView(R.id.rv_net_fragment)
     RecyclerView recyclerView;
+    @BindView(R.id.srl_net_fragment)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @InjectPresenter
     PhotosFromNetPresenter presenter;
@@ -109,38 +113,28 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
         return presenter;
     }
 
-    class AuthWebViewClient extends WebViewClient {
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Timber.d(url);
-            if (url.startsWith(ApiConst.REDIRECT_URI)) {
-                Timber.d(url);
-                String parts[] = url.split("=");
-                requestToken = parts[1];
-                Timber.d(requestToken);
-                frameLayoutWebView.removeAllViews();
-                frameLayoutWebView.setBackgroundColor(getResources().getColor(R.color.primaryColor));
-                webView.destroy();
-                progressBar.setVisibility(View.INVISIBLE);
-                presenter.loadUserData(requestToken);
-                presenter.loadUserRecent(requestToken);
-                return true;
-            }
-            return false;
-        }
-    }
-
     @Override
     public void initUI() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadDataFromNet();
+            }
+        });
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primaryDarkColorYB));
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         if (recyclerView != null) {
-            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-            layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new PhotoFromNetRecyclerViewAdapter(presenter);
         App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
+        progressBar.setVisibility(View.VISIBLE);
+        loadDataFromNet();
+    }
+
+    private void loadDataFromNet() {
         webView = new WebView(Objects.requireNonNull(getActivity()).getApplicationContext());
         frameLayoutWebView.addView(webView);
         webView.setWebViewClient(new AuthWebViewClient());
@@ -168,5 +162,46 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
     public void loadUserData(String avatarUri, String fullName) {
         imageLoader.loadInto(avatarUri, ivUserAvatar);
         tvUserName.setText(fullName);
+    }
+
+    class AuthWebViewClient extends WebViewClient {
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            progressBar.setVisibility(View.INVISIBLE);
+            frameLayoutWebView.setVisibility(View.VISIBLE);
+            Timber.d("onPage FINISHED");
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            frameLayoutWebView.setVisibility(View.INVISIBLE);
+            Timber.d("onPage STARTED");
+        }
+
+        @Override
+        public void onPageCommitVisible(WebView view, String url) {
+            super.onPageCommitVisible(view, url);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Timber.d(url);
+            if (url.startsWith(ApiConst.REDIRECT_URI)) {
+                Timber.d(url);
+                String parts[] = url.split("=");
+                requestToken = parts[1];
+                Timber.d(requestToken);
+                progressBar.setVisibility(View.INVISIBLE);
+                frameLayoutWebView.removeAllViews();
+                webView.destroy();
+                presenter.loadUserData(requestToken);
+                presenter.loadUserRecent(requestToken);
+                swipeRefreshLayout.setRefreshing(false);
+                return true;
+            }
+            return false;
+        }
     }
 }
