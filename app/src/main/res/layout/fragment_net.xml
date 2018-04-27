@@ -16,6 +16,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/tv_username_net_fragment"
             app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="avatar"
             tools:src="@drawable/ic_photo" />
 
         <TextView
@@ -57,15 +58,5 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_username_net_fragment"
         android:visibility="invisible"/>
-
-    <ProgressBar
-        android:id="@+id/pb_loading_net_fragment"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

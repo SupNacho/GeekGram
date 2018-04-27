@@ -3,33 +3,26 @@ package geekgram.supernacho.ru.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.PhotosFromDbFragmentView;
 import geekgram.supernacho.ru.PhotosFromNetFragmentView;
-import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.NetRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.entity.recent.Datum;
-import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 import timber.log.Timber;
 
 @InjectViewState
 public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentView> implements INetFragmentPresenter {
-    private PhotoModel photoTmp;
-    private int tempPos;
     private List<PhotoModel> photos;
-    private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
-    private Subscription subscription;
     private Disposable disposeRecent;
     private Disposable disposeUser;
 
@@ -44,10 +37,6 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
     @Override
     public void attachView(PhotosFromNetFragmentView view) {
         super.attachView(view);
-        Timber
-                .tag("++")
-                .d("NetP AttachView");
-//        repository.getStartData();
     }
 
     @Override
@@ -57,45 +46,6 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
                 .d("FirstAttach NetP Presenter");
         super.onFirstViewAttach();
         getViewState().initUI();
-//        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
-//            @Override
-//            public void onSubscribe(Subscription s) {
-//            subscription = s;
-//            subscription.request(1);
-//            Timber
-//                    .tag("++")
-//                    .d("NetPPresenter on Subscribe");
-//        }
-//
-//        @Override
-//        public void onNext(List<PhotoModel> photoModels) {
-//            Timber.tag("++").d("Size %d", photoModels.size());
-//            photos.clear();
-//            photos.addAll(photoModels);
-//            getViewState().updateRecyclerViewAdapter();
-//            subscription.request(1);
-//        }
-//
-//        @Override
-//        public void onError(Throwable t) {
-//            Timber
-//                    .tag("++")
-//                    .d(t.getMessage(), "on Error %s");
-//        }
-//
-//        @Override
-//        public void onComplete() {
-//            Timber
-//                    .tag("++")
-//                    .d("on Complete");
-//            getViewState().updateRecyclerViewAdapter();
-//        }
-//    };
-//        repository
-//                .getObservablePhotos()
-//                .subscribeOn(Schedulers.computation())
-//            .observeOn(uiScheduler)
-//                .subscribe(photoObserver);
     }
 
     @Override
@@ -109,16 +59,34 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
 
     @Override
     public void loadUserRecent(String token) {
+
         disposeRecent = repository.getUserRecentData(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(ur -> {
-                    photos.clear();
-                    for (Datum datum : ur.getData()) {
-                        photos.add(new PhotoModel(false, datum.getImages().getStandardResolution().getUrl()));
+                .doOnError(err -> {
+                    if (err instanceof HttpException) {
+                        HttpException exception = (HttpException) err;
+                        switch (exception.code()) {
+                            case ApiConst.AUTH_BAD_REQUEST:
+                                System.out.printf("CODE %s\n", exception.response().toString());
+                                getViewState().onHttpException("Bad request");
+                                break;
+                            case ApiConst.AUTH_REQUIRED:
+                                getViewState().onHttpException(exception.message());
+                                break;
+                            default:
+                                getViewState().onHttpException(exception.message());
+                                break;
+                        }
                     }
-                    getViewState().updateRecyclerViewAdapter();
-                });
+                })
+                .subscribe(ur -> {
+                        photos.clear();
+                        for (Datum datum : ur.getData()) {
+                            photos.add(new PhotoModel(false, datum.getImages().getStandardResolution().getUrl()));
+                        }
+                        getViewState().updateRecyclerViewAdapter();
+                    });
     }
 
     @Override
@@ -129,7 +97,6 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
         super.onDestroy();
         disposeUser.dispose();
         disposeRecent.dispose();
-//        subscription.cancel();
     }
 
     @Override

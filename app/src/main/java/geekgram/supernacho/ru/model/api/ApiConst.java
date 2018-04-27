@@ -6,4 +6,7 @@ public interface ApiConst {
     String TOKEN_URL = "https://api.instagram.com/oauth/access_token/";
     String REDIRECT_URI = "https://vanbellum.wixsite.com/photobro/";
     String CLIENT_ID = "9127ee4c7ec94be2971c62a203a40fce";
+    int AUTH_BAD_REQUEST = 400;
+    int AUTH_REQUIRED = 401;
+
 }
