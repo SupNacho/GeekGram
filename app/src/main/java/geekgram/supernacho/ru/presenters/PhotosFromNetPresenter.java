@@ -59,7 +59,6 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
 
     @Override
     public void loadUserRecent(String token) {
-
         disposeRecent = repository.getUserRecentData(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)

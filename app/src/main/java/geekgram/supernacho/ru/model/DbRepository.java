@@ -1,29 +1,26 @@
 package geekgram.supernacho.ru.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import geekgram.supernacho.ru.model.entity.RealmImage;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
-public class Repository implements IRepository {
+public class DbRepository {
     private List<PhotoModel> photos;
-    private PublishSubject<List<PhotoModel>> photosObservable;
+    private PublishSubject<RepoEvents> photosObservable;
 
 
-    public Repository() {
+    public DbRepository() {
         photos = new ArrayList<>();
         photosObservable = PublishSubject.create();
     }
 
-    @Override
+
     public void addPhoto(boolean isFavorite, String uriString) {
         Timber.d("Try add realm photo");
         Realm realm = Realm.getDefaultInstance();
@@ -40,7 +37,7 @@ public class Repository implements IRepository {
         realm.close();
     }
 
-    @Override
+
     public void addPhoto(int pos, PhotoModel pm) {
         Timber.d("add photo to realm scn fn");
         Realm realm = Realm.getDefaultInstance();
@@ -55,52 +52,53 @@ public class Repository implements IRepository {
         });
         realm.close();
         photos.add(pos, pm);
-        photosObservable.onNext(photos);
+        photosObservable.onNext(RepoEvents.UPDATE);
     }
 
-    @Override
     public void remove(int pos) {
         Timber.d("Remove photo from realm");
         PhotoModel pm = photos.remove(pos);
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
         realm.executeTransaction( innerRealm -> realmPhotos.deleteAllFromRealm());
-        photosObservable.onNext(photos);
+        photosObservable.onNext(RepoEvents.UPDATE);
         realm.close();
-//        File deleteFile = new File(pm.getPhotoSrc());
-//        if (deleteFile.exists()){
-//            deleteFile.delete();
-//        }
     }
 
-    @Override
-    public List<PhotoModel> getPhotos() {
+
+    public void getPhotos() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).findAll();
         if (realmPhotos != null) {
             photos.clear();
             for (RealmImage realmPhoto : realmPhotos) {
                 photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
+                photosObservable.onNext(RepoEvents.UPDATE);
             }
         }
         realm.close();
-        return photos;
     }
 
-    @Override
-    public Observable<List<PhotoModel>> getObservablePhotos() {
+    public Observable<List<PhotoModel>> getObservableDbPhotos() {
+        return Observable.create( e -> {
+            Realm realm = Realm.getDefaultInstance();
+            RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).findAll();
+            if (realmPhotos != null) {
+                photos.clear();
+                for (RealmImage realmPhoto : realmPhotos) {
+                    photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
+                }
+            }
+            realm.close();
+            e.onNext(photos);
+        });
+    }
+
+
+    public Observable<RepoEvents> getObservablePhotos() {
         return photosObservable;
     }
 
-    public void getStartData() {
-        Timber
-                .tag("++")
-                .d("Get START DATA!");
-        getPhotos();
-        photosObservable.onNext(photos);
-    }
-
-    @Override
     public void favoriteIsChanged(PhotoModel pm) {
         Realm realm = Realm.getDefaultInstance();
         RealmImage realmImage = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findFirst();
@@ -111,6 +109,9 @@ public class Repository implements IRepository {
         });
         realm.close();
         getPhotos();
-        photosObservable.onNext(photos);
+    }
+
+    public List<PhotoModel> getPhotoCollection() {
+        return photos;
     }
 }

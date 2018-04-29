@@ -34,27 +34,27 @@ public class ImageLoaderGlider implements IImageLoader<ImageView> {
     public void loadIntoFromNet(@Nullable String url, ImageView container) {
         if (NetworkStatus.isOnline()) {
             GlideApp.with(container.getContext())
-                    .asBitmap()
+//                    .asBitmap()
                     .load(url)
                     .placeholder(R.drawable.ic_photo)
-                    .listener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                            cache.saveImage(url, resource);
-                            return false;
-                        }
-                    })
+//                    .listener(new RequestListener<Bitmap>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+//                            cache.saveImage(url, resource);
+//                            return false;
+//                        }
+//                    })
                     .into(container);
         } else {
             if (cache.contains(url)){
                 GlideApp.with(container.getContext())
-                        .asBitmap()
-                        .load(cache.getFile(url))
+//                        .asBitmap()
+                        .load(R.drawable.ic_photo)
                         .placeholder(R.drawable.ic_photo)
                         .into(container);
             }

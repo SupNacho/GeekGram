@@ -1,11 +1,7 @@
 package geekgram.supernacho.ru.presenters;
 
-import android.annotation.SuppressLint;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-
-import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,26 +11,27 @@ import javax.inject.Inject;
 import geekgram.supernacho.ru.FavFragmentView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
-import geekgram.supernacho.ru.model.Repository;
-import io.reactivex.FlowableSubscriber;
+import geekgram.supernacho.ru.model.RepoEvents;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter{
+public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
-    @Inject IRepository repository;
-    private FlowableSubscriber<List<PhotoModel>> photoObserver;
+    @Inject
+    IRepository repository;
+    private Observer<RepoEvents> photoObserver;
     private Scheduler uiScheduler;
-    private Subscription subscription;
+    private Disposable subscription;
 
     public FavPhotoPresenter(Scheduler scheduler) {
         this.uiScheduler = scheduler;
-        this.photos = new ArrayList<>();
         this.favPhotos = new ArrayList<>();
 
     }
@@ -42,51 +39,39 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     @Override
     public void attachView(FavFragmentView view) {
         super.attachView(view);
-        Timber
-                .tag("++")
-                .d("FP AttachView");
-        repository.getStartData();
+        Timber.d("FP AttachView");
+//        repository.getUpdatedPhotos();
     }
 
     @Override
     protected void onFirstViewAttach() {
-        Timber
-                .tag("++")
-                .d("FirstAttach FP Presenter");
+        Timber.d("FirstAttach FP Presenter");
         super.onFirstViewAttach();
+        photos = repository.getPhotoCollection();
         getViewState().initUI();
-        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
+        photoObserver = new Observer<RepoEvents>() {
             @Override
-            public void onSubscribe(Subscription s) {
-                subscription = s;
-                subscription.request(1);
-                Timber
-                        .tag("++")
-                        .d("Fav Presenter on Subscribe");
-                repository.getStartData();
+            public void onSubscribe(Disposable d) {
+                subscription = d;
+                Timber.d("Fav Presenter on Subscribe");
             }
 
             @Override
-            public void onNext(List<PhotoModel> photoModels) {
-                photos.clear();
-                photos.addAll(photoModels);
-                favoriteIsChanged();
-                getViewState().updateRecyclerViewAdapter();
-                subscription.request(1);
+            public void onNext(RepoEvents events) {
+                if (events == RepoEvents.UPDATE) {
+                    favoriteIsChanged();
+                    getViewState().updateRecyclerViewAdapter();
+                }
             }
 
             @Override
             public void onError(Throwable t) {
-                Timber
-                        .tag("++")
-                        .d(t.getMessage(), "on Error: %s");
+                Timber.d(t.getMessage(), "on Error: %s");
             }
 
             @Override
             public void onComplete() {
-                Timber
-                        .tag("++")
-                        .d("on Complete");
+                Timber.d("on Complete");
                 getViewState().updateRecyclerViewAdapter();
             }
         };
@@ -95,19 +80,14 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
                 .subscribeOn(Schedulers.computation())
                 .observeOn(uiScheduler)
                 .subscribe(photoObserver);
-//        getViewState().updateRecyclerViewAdapter();
-        repository.getStartData();
     }
-
 
 
     @Override
     public void onDestroy() {
-        Timber
-                .tag("++")
-                .d("FP Presenter Destroyed");
+        Timber.d("FP Presenter Destroyed");
         super.onDestroy();
-        subscription.cancel();
+        subscription.dispose();
     }
 
     @Override

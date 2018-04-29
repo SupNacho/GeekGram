@@ -1,4 +1,3 @@
 package geekgram.supernacho.ru.model;
 
-public enum RepoEvents {
-}
+public enum RepoEvents { UPDATE }

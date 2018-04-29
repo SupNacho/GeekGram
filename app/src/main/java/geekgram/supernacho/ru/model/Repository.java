@@ -1,23 +1,26 @@
 package geekgram.supernacho.ru.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import geekgram.supernacho.ru.model.entity.RealmImage;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 public class Repository implements IRepository {
     private List<PhotoModel> photos;
-    private PublishSubject<List<PhotoModel>> photosObservable;
+    private PublishSubject<RepoEvents> photosObservable;
+    private Disposable repDsposable;
+    DbRepository dbRepository;
+    NetRepository netRepository;
 
 
-    public Repository() {
+    public Repository(DbRepository dbRepository, NetRepository netRepository) {
+        this.dbRepository = dbRepository;
+        this.netRepository = netRepository;
         photos = new ArrayList<>();
         photosObservable = PublishSubject.create();
     }
@@ -25,91 +28,49 @@ public class Repository implements IRepository {
     @Override
     public void addPhoto(boolean isFavorite, String uriString) {
         Timber.d("Try add realm photo");
-        Realm realm = Realm.getDefaultInstance();
-        RealmImage img  = realm.where(RealmImage.class).equalTo("imgUri", uriString).findFirst();
-        realm.executeTransaction( innerRealm -> {
-            if (img == null){
-                Timber.d("Add photo to realm");
-                RealmImage newImage = realm.createObject(RealmImage.class, uriString);
-                newImage.setFavorites(isFavorite);
-            } else {
-                img.setFavorites(isFavorite);
-            }
-        });
-        realm.close();
+        dbRepository.addPhoto(isFavorite, uriString);
     }
 
     @Override
     public void addPhoto(int pos, PhotoModel pm) {
         Timber.d("add photo to realm scn fn");
-        Realm realm = Realm.getDefaultInstance();
-        RealmImage img  = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findFirst();
-        realm.executeTransaction( innerRealm -> {
-            if (img == null){
-                RealmImage newImage = realm.createObject(RealmImage.class, pm.getPhotoSrc());
-                newImage.setFavorites(pm.isFavorite());
-            } else {
-                img.setFavorites(pm.isFavorite());
-            }
-        });
-        realm.close();
-        photos.add(pos, pm);
-        photosObservable.onNext(photos);
+        dbRepository.addPhoto(pos, pm);
     }
 
     @Override
     public void remove(int pos) {
         Timber.d("Remove photo from realm");
-        PhotoModel pm = photos.remove(pos);
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
-        realm.executeTransaction( innerRealm -> realmPhotos.deleteAllFromRealm());
-        photosObservable.onNext(photos);
-        realm.close();
-//        File deleteFile = new File(pm.getPhotoSrc());
-//        if (deleteFile.exists()){
-//            deleteFile.delete();
-//        }
+        dbRepository.remove(pos);
     }
 
     @Override
-    public List<PhotoModel> getPhotos() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).findAll();
-        if (realmPhotos != null) {
-            photos.clear();
-            for (RealmImage realmPhoto : realmPhotos) {
-                photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
-            }
-        }
-        realm.close();
-        return photos;
+    public void getUpdatedPhotos() {
+        photos.clear();
+        repDsposable = Observable.merge(netRepository.getNetPhoto(), dbRepository.getObservableDbPhotos())
+                .subscribeOn(Schedulers.io()).subscribe(photoModels -> {
+                    photos.addAll(photoModels);
+                    photosObservable.onNext(RepoEvents.UPDATE);
+                });
     }
 
     @Override
-    public Flowable<List<PhotoModel>> getObservablePhotos() {
-        return photosObservable.toFlowable(BackpressureStrategy.BUFFER);
-    }
-
-    public void getStartData() {
-        Timber
-                .tag("++")
-                .d("Get START DATA!");
-        getPhotos();
-        photosObservable.onNext(photos);
+    public Observable<RepoEvents> getObservablePhotos() {
+        return photosObservable;
     }
 
     @Override
     public void favoriteIsChanged(PhotoModel pm) {
-        Realm realm = Realm.getDefaultInstance();
-        RealmImage realmImage = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findFirst();
-        realm.executeTransaction( innerRealm ->{
-            if (realmImage != null) {
-                realmImage.setFavorites(pm.isFavorite());
-            }
-        });
-        realm.close();
-        getPhotos();
-        photosObservable.onNext(photos);
+        dbRepository.favoriteIsChanged(pm);
+        getUpdatedPhotos();
+    }
+
+    @Override
+    public List<PhotoModel> getPhotoCollection() {
+        return photos;
+    }
+
+    @Override
+    public void disposeTasks() {
+        repDsposable.dispose();
     }
 }
