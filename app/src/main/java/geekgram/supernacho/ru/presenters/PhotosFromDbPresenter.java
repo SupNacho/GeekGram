@@ -61,9 +61,7 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
             @Override
             public void onNext(RepoEvents event) {
                 Timber.d("Size %s", event);
-//                photos.clear();
-//                photos.addAll(photoModels);
-                if (event == RepoEvents.UPDATE) getViewState().updateRecyclerViewAdapter();
+                if (event == RepoEvents.DB_UPDATED) getViewState().updateRecyclerViewAdapter();
             }
 
             @Override
@@ -88,7 +86,7 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     public void onDestroy() {
         Timber.d("DBP Presenter Destroyed");
         super.onDestroy();
-        subscription.dispose();
+        if (subscription != null) subscription.dispose();
     }
 
     @Override
@@ -109,7 +107,7 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
         if (photos != null && photos.size() > pos) {
             photoTmp = photos.get(pos);
             tempPos = pos;
-            repository.remove(pos);
+            repository.remove(photoTmp);
         }
     }
 

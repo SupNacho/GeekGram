@@ -153,6 +153,7 @@ public class MainActivity extends MvpAppCompatActivity
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             final File[] photoFile = {null};
             try {
+
                 presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_DCIM), "Camera")
                         .subscribeOn(Schedulers.io())

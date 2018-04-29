@@ -40,7 +40,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     IImageCache imageCache;
 
     public AllPhotoPresenter(Scheduler scheduler) {
-//        this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
 
@@ -48,8 +47,8 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void attachView(AllPhotoFragmentView view) {
         super.attachView(view);
         Timber.d("AP AttachView");
-//        photos.clear();
         repository.getUpdatedPhotos();
+        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
@@ -68,10 +67,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
             @Override
             public void onNext(RepoEvents event) {
                 Timber.d("Event %s", event);
-//                photos.clear();
-//                photos.addAll(photoModels);
-//                photos = photoModels;
-//                photos.size();
                 if (event == RepoEvents.UPDATE) getViewState().updateRecyclerViewAdapter();
             }
 
@@ -98,8 +93,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void onDestroy() {
         Timber.d("AP Presenter Destroyed");
         super.onDestroy();
-        subscription.dispose();
-        repository.disposeTasks();
     }
 
     @Override
@@ -126,7 +119,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Override
     public void undoDeletion() {
-        repository.addPhoto(tempPos, photoTmp);
+        repository.undoDeletion(photoTmp);
     }
 
     @Override

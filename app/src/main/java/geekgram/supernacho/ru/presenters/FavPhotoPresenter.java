@@ -40,7 +40,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public void attachView(FavFragmentView view) {
         super.attachView(view);
         Timber.d("FP AttachView");
-//        repository.getUpdatedPhotos();
+        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
@@ -58,6 +58,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
 
             @Override
             public void onNext(RepoEvents events) {
+                Timber.d("Fav event %s", events);
                 if (events == RepoEvents.UPDATE) {
                     favoriteIsChanged();
                     getViewState().updateRecyclerViewAdapter();
@@ -87,7 +88,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public void onDestroy() {
         Timber.d("FP Presenter Destroyed");
         super.onDestroy();
-        subscription.dispose();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
 
     @Override
     public void undoDeletion() {
-        repository.addPhoto(tempPos, photoTmp);
+        repository.undoDeletion(photoTmp);
         favoriteIsChanged();
     }
 

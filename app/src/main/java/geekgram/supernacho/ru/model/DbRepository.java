@@ -13,6 +13,7 @@ import timber.log.Timber;
 public class DbRepository {
     private List<PhotoModel> photos;
     private PublishSubject<RepoEvents> photosObservable;
+    private int tmpPos;
 
 
     public DbRepository() {
@@ -52,7 +53,24 @@ public class DbRepository {
         });
         realm.close();
         photos.add(pos, pm);
-        photosObservable.onNext(RepoEvents.UPDATE);
+        photosObservable.onNext(RepoEvents.DB_UPDATED);
+    }
+
+    public void undoDeletion(PhotoModel pm) {
+        Timber.d("add photo to realm scn fn");
+        Realm realm = Realm.getDefaultInstance();
+        RealmImage img  = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findFirst();
+        realm.executeTransaction( innerRealm -> {
+            if (img == null){
+                RealmImage newImage = realm.createObject(RealmImage.class, pm.getPhotoSrc());
+                newImage.setFavorites(pm.isFavorite());
+            } else {
+                img.setFavorites(pm.isFavorite());
+            }
+        });
+        realm.close();
+        if (tmpPos > -1)photos.add(tmpPos, pm);
+        photosObservable.onNext(RepoEvents.DB_UPDATED);
     }
 
     public void remove(int pos) {
@@ -61,8 +79,25 @@ public class DbRepository {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
         realm.executeTransaction( innerRealm -> realmPhotos.deleteAllFromRealm());
-        photosObservable.onNext(RepoEvents.UPDATE);
+//        photosObservable.onNext(RepoEvents.UPDATE);
+        photosObservable.onNext(RepoEvents.DB_UPDATED);
         realm.close();
+    }
+
+    public void remove(PhotoModel pm) {
+        Timber.d("Remove photo from realm");
+        tmpPos = photos.indexOf(pm);
+        boolean removed = photos.remove(pm);
+        if (removed) {
+            Realm realm = Realm.getDefaultInstance();
+            RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
+            realm.executeTransaction(innerRealm -> realmPhotos.deleteAllFromRealm());
+//            photosObservable.onNext(RepoEvents.UPDATE);
+            photosObservable.onNext(RepoEvents.DB_UPDATED);
+            realm.close();
+        } else {
+            Timber.d("Trying delete Instagram photo");
+        }
     }
 
 
@@ -73,7 +108,7 @@ public class DbRepository {
             photos.clear();
             for (RealmImage realmPhoto : realmPhotos) {
                 photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
-                photosObservable.onNext(RepoEvents.UPDATE);
+                photosObservable.onNext(RepoEvents.DB_UPDATED);
             }
         }
         realm.close();
@@ -108,7 +143,7 @@ public class DbRepository {
             }
         });
         realm.close();
-        getPhotos();
+        photosObservable.onNext(RepoEvents.DB_UPDATED);
     }
 
     public List<PhotoModel> getPhotoCollection() {
