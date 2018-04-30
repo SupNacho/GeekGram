@@ -26,4 +26,5 @@
     <color name="black_overlay">#99000000</color>
     <color name="lighter_black_overlay">#66000000</color>
     <color name="accent_black_overlay">#11000000</color>
+    <color name="logo_bg_color">#2c2c2b</color>
 </resources>

@@ -77,6 +77,7 @@ public class AuthActivity extends AppCompatActivity {
                 webView.destroy();
                 Intent intent = new Intent(AuthActivity.this, MainActivity.class);
                 startActivity(intent);
+                AuthActivity.this.finish();
                 return true;
             }
             return false;
