@@ -85,8 +85,8 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     @Override
     public void onDestroy() {
         Timber.d("DBP Presenter Destroyed");
-        super.onDestroy();
         if (subscription != null) subscription.dispose();
+        super.onDestroy();
     }
 
     @Override

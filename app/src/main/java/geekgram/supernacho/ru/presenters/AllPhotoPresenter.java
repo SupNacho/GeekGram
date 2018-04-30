@@ -92,6 +92,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     @Override
     public void onDestroy() {
         Timber.d("AP Presenter Destroyed");
+        if (subscription != null) subscription.dispose();
         super.onDestroy();
     }
 

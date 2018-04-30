@@ -104,9 +104,7 @@ public class Repository implements IRepository {
 
     @Override
     public void favoriteIsChanged(PhotoModel pm) {
-        pm.setFavorite(!pm.isFavorite());
         dbRepository.favoriteIsChanged(pm);
-        photosObservable.onNext(RepoEvents.UPDATE);
     }
 
     @Override

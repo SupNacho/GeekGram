@@ -9,7 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import geekgram.supernacho.ru.FavFragmentView;
-import geekgram.supernacho.ru.model.IRepository;
+import geekgram.supernacho.ru.model.DbRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.RepoEvents;
 import io.reactivex.Observer;
@@ -25,7 +25,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     @Inject
-    IRepository repository;
+    DbRepository repository;
     private Observer<RepoEvents> photoObserver;
     private Scheduler uiScheduler;
     private Disposable subscription;
@@ -59,7 +59,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
             @Override
             public void onNext(RepoEvents events) {
                 Timber.d("Fav event %s", events);
-                if (events == RepoEvents.UPDATE) {
+                if (events == RepoEvents.DB_UPDATED) {
                     favoriteIsChanged();
                     getViewState().updateRecyclerViewAdapter();
                 }
@@ -87,7 +87,8 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     @Override
     public void onDestroy() {
         Timber.d("FP Presenter Destroyed");
-        super.onDestroy();
+        if (subscription != null) subscription.dispose();
+            super.onDestroy();
     }
 
     @Override
