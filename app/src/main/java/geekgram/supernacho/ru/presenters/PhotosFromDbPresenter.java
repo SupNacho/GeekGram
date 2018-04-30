@@ -3,18 +3,18 @@ package geekgram.supernacho.ru.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import geekgram.supernacho.ru.PhotosFromDbFragmentView;
-import geekgram.supernacho.ru.model.IRepository;
+import geekgram.supernacho.ru.model.DbRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
-import io.reactivex.FlowableSubscriber;
+import geekgram.supernacho.ru.model.RepoEvents;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -23,81 +23,65 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
-    private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
-    private Subscription subscription;
+    private Disposable subscription;
 
-    @Inject IRepository repository;
+    @Inject
+    DbRepository repository;
 
     public PhotosFromDbPresenter(Scheduler scheduler) {
-        this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
 
     @Override
     public void attachView(PhotosFromDbFragmentView view) {
         super.attachView(view);
-        Timber
-                .tag("++")
-                .d("BDP AttachView");
-        repository.getStartData();
+        Timber.d("DBP AttachView");
+        repository.getPhotos();
     }
 
     @Override
     protected void onFirstViewAttach() {
-        Timber
-                .tag("++")
-                .d("FirstAttach DBP Presenter");
+        Timber.d("FirstAttach DBP Presenter");
         super.onFirstViewAttach();
+        photos = repository.getPhotoCollection();
         getViewState().initUI();
-        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
+        Observer<RepoEvents> dbRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
-            public void onSubscribe(Subscription s) {
-                subscription = s;
-                subscription.request(1);
-                Timber
-                        .tag("++")
-                        .d("DBPPresenter on Subscribe");
+            public void onSubscribe(Disposable d) {
+                subscription = d;
+                Timber.d("DBPPresenter on Subscribe");
             }
 
             @Override
-            public void onNext(List<PhotoModel> photoModels) {
-                Timber.tag("++").d("Size %d", photoModels.size());
-                photos.clear();
-                photos.addAll(photoModels);
-                getViewState().updateRecyclerViewAdapter();
-                subscription.request(1);
+            public void onNext(RepoEvents event) {
+                Timber.d("Size %s", event);
+                if (event == RepoEvents.DB_UPDATED) getViewState().updateRecyclerViewAdapter();
             }
 
             @Override
             public void onError(Throwable t) {
-                Timber
-                        .tag("++")
-                        .d(t.getMessage(), "on Error %s");
+                Timber.d(t.getMessage(), "on Error %s");
             }
 
             @Override
             public void onComplete() {
-                Timber
-                        .tag("++")
-                        .d("on Complete");
+                Timber.d("on Complete");
                 getViewState().updateRecyclerViewAdapter();
             }
         };
         repository
-                .getObservablePhotos()
-                .subscribeOn(Schedulers.computation())
+                .getDbRepoEventBus()
+                .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
+                .subscribe(dbRepoEventBusObserver);
     }
 
     @Override
     public void onDestroy() {
-        Timber
-                .tag("++")
-                .d("DBP Presenter Destroyed");
+        Timber.d("DBP Presenter Destroyed");
+        if (subscription != null) subscription.dispose();
         super.onDestroy();
-        subscription.cancel();
     }
 
     @Override
@@ -118,7 +102,7 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
         if (photos != null && photos.size() > pos) {
             photoTmp = photos.get(pos);
             tempPos = pos;
-            repository.remove(pos);
+            repository.remove(photoTmp);
         }
     }
 

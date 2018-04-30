@@ -11,6 +11,7 @@ import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.adapter.PhotoFromDbRecyclerViewAdapter;
 import geekgram.supernacho.ru.adapter.PhotoFromNetRecyclerViewAdapter;
 import geekgram.supernacho.ru.di.modules.AppModule;
+import geekgram.supernacho.ru.di.modules.DbRepoModule;
 import geekgram.supernacho.ru.di.modules.ImageGliderModule;
 import geekgram.supernacho.ru.di.modules.NetRepoModule;
 import geekgram.supernacho.ru.di.modules.RepoModule;
@@ -22,7 +23,7 @@ import geekgram.supernacho.ru.presenters.PhotosFromDbPresenter;
 import geekgram.supernacho.ru.presenters.PhotosFromNetPresenter;
 
 @Singleton
-@Component(modules = {AppModule.class, RepoModule.class, ImageGliderModule.class, NetRepoModule.class})
+@Component(modules = {AppModule.class, RepoModule.class, ImageGliderModule.class, NetRepoModule.class, DbRepoModule.class})
 public interface AppComponent {
     void inject(MainActivity activity);
     void inject(FullscreenPhotoActivity activity);

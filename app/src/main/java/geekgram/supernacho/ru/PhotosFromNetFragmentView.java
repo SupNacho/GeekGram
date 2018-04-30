@@ -10,4 +10,5 @@ public interface PhotosFromNetFragmentView extends MvpView {
     void updateRecyclerViewAdapter();
     void startViewPhoto(int pos, String uri, boolean isFavorite);
     void loadUserData(String avatarUri, String fullName);
+    void onHttpException(String error);
 }

@@ -7,11 +7,13 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public interface IRepository {
-    void getStartData();
     void addPhoto(boolean isFavorite, String uriString);
     void addPhoto(int pos, PhotoModel pm);
     void remove(int pos);
+    void undoDeletion(PhotoModel pm);
     void favoriteIsChanged(PhotoModel pm);
-    Flowable<List<PhotoModel>> getObservablePhotos();
-    List<PhotoModel> getPhotos();
+    Observable<RepoEvents> getEvenBus();
+    void doCollectionsMerge();
+    List<PhotoModel> getPhotoCollection();
+    void disposeTasks();
 }

@@ -57,7 +57,7 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
         switch (holder.getItemViewType()) {
             case 0:
                 if (photoModel.getPhotoSrc() != null) {
-                    imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
+                    imageLoader.loadIntoFromNet(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
 
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
@@ -77,7 +77,7 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
-                    imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardOne) holder).imageView);
+                    imageLoader.loadIntoFromNet(photoModel.getPhotoSrc(), ((ViewCardOne) holder).imageView);
                 }  else {
                     ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }

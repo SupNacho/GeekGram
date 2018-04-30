@@ -69,7 +69,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     @Override
                     public void onClick(View view) {
                         presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
+//                        notifyDataSetChanged();
                     }
                 });
                 break;
@@ -88,7 +88,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     @Override
                     public void onClick(View view) {
                         presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
+//                        notifyDataSetChanged();
                     }
                 });
                 break;

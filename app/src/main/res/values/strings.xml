@@ -4,7 +4,7 @@
     <string name="text_view_1">Hello World!</string>
     <string name="button_theme_one">theme one</string>
     <string name="button_theme_two">theme two</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">PhotoBro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

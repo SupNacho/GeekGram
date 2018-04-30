@@ -3,104 +3,95 @@ package geekgram.supernacho.ru.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import geekgram.supernacho.ru.AllPhotoFragmentView;
+import geekgram.supernacho.ru.model.DbRepository;
+import geekgram.supernacho.ru.model.IImageCache;
 import geekgram.supernacho.ru.model.IRepository;
+import geekgram.supernacho.ru.model.NetRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
-import geekgram.supernacho.ru.model.Repository;
-import io.reactivex.FlowableSubscriber;
+import geekgram.supernacho.ru.model.RepoEvents;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
 public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
-    private int tempPos;
     private List<PhotoModel> photos;
-    private FlowableSubscriber<List<PhotoModel>> photoObserver;
     private Scheduler uiScheduler;
-    private Subscription subscription;
+    private Disposable subscription;
 
-    @Inject IRepository repository;
+    @Inject
+    DbRepository dbRepository;
+    @Inject
+    IRepository repository;
+    @Inject
+    NetRepository netRepository;
+    @Inject
+    IImageCache imageCache;
 
     public AllPhotoPresenter(Scheduler scheduler) {
-        this.photos = new ArrayList<>();
         this.uiScheduler = scheduler;
     }
 
     @Override
     public void attachView(AllPhotoFragmentView view) {
         super.attachView(view);
-        Timber
-                .tag("++")
-                .d("AP AttachView");
-        repository.getStartData();
+        Timber.d("AP AttachView");
+        repository.doCollectionsMerge();
+        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
     protected void onFirstViewAttach() {
-        Timber
-                .tag("++")
-                .d("FirstAttach AP Presenter");
+        Timber.d("FirstAttach AP Presenter");
+        photos = repository.getPhotoCollection();
         super.onFirstViewAttach();
         getViewState().initUI();
-        photoObserver = new FlowableSubscriber<List<PhotoModel>>() {
+        Observer<RepoEvents> mainRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
-            public void onSubscribe(Subscription s) {
-                subscription = s;
-                subscription.request(1);
-                Timber
-                        .tag("++")
-                        .d("APPresenter on Subscribe");
+            public void onSubscribe(Disposable d) {
+                subscription = d;
+                Timber.d("APPresenter on Subscribe");
             }
 
             @Override
-            public void onNext(List<PhotoModel> photoModels) {
-                Timber.tag("++").d("Size %d", photoModels.size());
-                photos.clear();
-                photos.addAll(photoModels);
-                getViewState().updateRecyclerViewAdapter();
-                subscription.request(1);
+            public void onNext(RepoEvents event) {
+                Timber.d("Event %s", event);
+                if (event == RepoEvents.UPDATE) getViewState().updateRecyclerViewAdapter();
             }
 
             @Override
             public void onError(Throwable t) {
-                Timber
-                        .tag("++")
-                        .d(t.getMessage(), "on Error %s");
+                Timber.d(t.getMessage(), "on Error %s");
             }
 
             @Override
             public void onComplete() {
-                Timber
-                        .tag("++")
-                        .d("on Complete");
+                Timber.d("on Complete");
                 getViewState().updateRecyclerViewAdapter();
             }
         };
+
         repository
-                .getObservablePhotos()
-                .subscribeOn(Schedulers.computation())
+                .getEvenBus()
+                .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
-//        getViewState().updateRecyclerViewAdapter();
-//        repository.getStartData();
+                .subscribe(mainRepoEventBusObserver);
     }
 
     @Override
     public void onDestroy() {
-        Timber
-                .tag("++")
-                .d("AP Presenter Destroyed");
+        Timber.d("AP Presenter Destroyed");
+        if (subscription != null) subscription.dispose();
         super.onDestroy();
-        subscription.cancel();
     }
 
     @Override
@@ -120,14 +111,13 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
             photoTmp = photos.get(pos);
-            tempPos = pos;
             repository.remove(pos);
         }
     }
 
     @Override
     public void undoDeletion() {
-        repository.addPhoto(tempPos, photoTmp);
+        repository.undoDeletion(photoTmp);
     }
 
     @Override

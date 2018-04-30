@@ -4,58 +4,48 @@ package geekgram.supernacho.ru;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-
-import java.util.Objects;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import geekgram.supernacho.ru.adapter.PhotoFromDbRecyclerViewAdapter;
 import geekgram.supernacho.ru.adapter.PhotoFromNetRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.api.ApiService;
-import geekgram.supernacho.ru.model.entity.User;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.PhotosFromNetPresenter;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import timber.log.Timber;
 
 public class PhotosFromNetFragment extends MvpAppCompatFragment implements PhotosFromNetFragmentView {
 
     @BindView(R.id.fl_web_view_container_net_fragment)
     FrameLayout frameLayoutWebView;
-    @BindView(R.id.pb_loading_net_fragment)
-    ProgressBar progressBar;
     @BindView(R.id.iv_user_net_fragment)
     ImageView ivUserAvatar;
     @BindView(R.id.tv_username_net_fragment)
     TextView tvUserName;
     @BindView(R.id.rv_net_fragment)
     RecyclerView recyclerView;
+    @BindView(R.id.srl_net_fragment)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @InjectPresenter
     PhotosFromNetPresenter presenter;
@@ -63,8 +53,6 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
     IImageLoader<ImageView> imageLoader;
 
     private PhotoFromNetRecyclerViewAdapter adapter;
-    private WebView webView;
-    private String requestToken;
     private Unbinder unbinder;
     ApiService apiService;
 
@@ -109,45 +97,25 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
         return presenter;
     }
 
-    class AuthWebViewClient extends WebViewClient {
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Timber.d(url);
-            if (url.startsWith(ApiConst.REDIRECT_URI)) {
-                Timber.d(url);
-                String parts[] = url.split("=");
-                requestToken = parts[1];
-                Timber.d(requestToken);
-                frameLayoutWebView.removeAllViews();
-                frameLayoutWebView.setBackgroundColor(getResources().getColor(R.color.primaryColor));
-                webView.destroy();
-                progressBar.setVisibility(View.INVISIBLE);
-                presenter.loadUserData(requestToken);
-                presenter.loadUserRecent(requestToken);
-                return true;
-            }
-            return false;
-        }
-    }
-
     @Override
     public void initUI() {
+        swipeRefreshLayout.setOnRefreshListener(this::loadDataFromNet);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primaryDarkColorYB));
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         if (recyclerView != null) {
-            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-            layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
         }
         adapter = new PhotoFromNetRecyclerViewAdapter(presenter);
         App.getInstance().getAppComponent().inject(adapter);
         recyclerView.setAdapter(adapter);
-        webView = new WebView(Objects.requireNonNull(getActivity()).getApplicationContext());
-        frameLayoutWebView.addView(webView);
-        webView.setWebViewClient(new AuthWebViewClient());
-        webView.loadUrl("https://api.instagram.com/oauth/authorize/" +
-                "?client_id=" + ApiConst.CLIENT_ID +
-                "&redirect_uri=" + ApiConst.REDIRECT_URI +
-                "&response_type=token");
+        loadDataFromNet();
+    }
+
+    private void loadDataFromNet() {
+        presenter.loadUserData(App.requestToken[0]);
+        presenter.loadUserRecent(App.requestToken[0]);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -168,5 +136,12 @@ public class PhotosFromNetFragment extends MvpAppCompatFragment implements Photo
     public void loadUserData(String avatarUri, String fullName) {
         imageLoader.loadInto(avatarUri, ivUserAvatar);
         tvUserName.setText(fullName);
+    }
+
+    @Override
+    public void onHttpException(String error) {
+        Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getActivity(), AuthActivity.class);
+        startActivity(intent);
     }
 }
