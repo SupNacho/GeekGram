@@ -12,9 +12,8 @@ public interface IRepository {
     void remove(int pos);
     void undoDeletion(PhotoModel pm);
     void favoriteIsChanged(PhotoModel pm);
-    Observable<RepoEvents> getObservablePhotos();
-    void getUpdatedPhotos();
+    Observable<RepoEvents> getEvenBus();
+    void doCollectionsMerge();
     List<PhotoModel> getPhotoCollection();
     void disposeTasks();
-    int getCount();
 }

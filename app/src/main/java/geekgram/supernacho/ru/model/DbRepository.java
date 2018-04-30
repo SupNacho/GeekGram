@@ -12,13 +12,13 @@ import timber.log.Timber;
 
 public class DbRepository {
     private List<PhotoModel> photos;
-    private PublishSubject<RepoEvents> photosObservable;
+    private PublishSubject<RepoEvents> dbRepoEventBus;
     private int tmpPos;
 
 
     public DbRepository() {
         photos = new ArrayList<>();
-        photosObservable = PublishSubject.create();
+        dbRepoEventBus = PublishSubject.create();
     }
 
 
@@ -53,7 +53,7 @@ public class DbRepository {
         });
         realm.close();
         photos.add(pos, pm);
-        photosObservable.onNext(RepoEvents.DB_UPDATED);
+        dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
     }
 
     public void undoDeletion(PhotoModel pm) {
@@ -70,7 +70,7 @@ public class DbRepository {
         });
         realm.close();
         if (tmpPos > -1)photos.add(tmpPos, pm);
-        photosObservable.onNext(RepoEvents.DB_UPDATED);
+        dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
     }
 
     public void remove(int pos) {
@@ -79,8 +79,7 @@ public class DbRepository {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
         realm.executeTransaction( innerRealm -> realmPhotos.deleteAllFromRealm());
-//        photosObservable.onNext(RepoEvents.UPDATE);
-        photosObservable.onNext(RepoEvents.DB_UPDATED);
+        dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
         realm.close();
     }
 
@@ -92,8 +91,7 @@ public class DbRepository {
             Realm realm = Realm.getDefaultInstance();
             RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).equalTo("imgUri", pm.getPhotoSrc()).findAll();
             realm.executeTransaction(innerRealm -> realmPhotos.deleteAllFromRealm());
-//            photosObservable.onNext(RepoEvents.UPDATE);
-            photosObservable.onNext(RepoEvents.DB_UPDATED);
+            dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
             realm.close();
         } else {
             Timber.d("Trying delete Instagram photo");
@@ -108,30 +106,47 @@ public class DbRepository {
             photos.clear();
             for (RealmImage realmPhoto : realmPhotos) {
                 photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
-                photosObservable.onNext(RepoEvents.DB_UPDATED);
+                dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
             }
         }
         realm.close();
     }
 
-    public Observable<List<PhotoModel>> getObservableDbPhotos() {
+//    public Observable<List<PhotoModel>> getObservableDbPhotosCollection() {
+//        return Observable.create( e -> {
+//            Realm realm = Realm.getDefaultInstance();
+//            RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).findAll();
+//            if (realmPhotos != null) {
+//                photos.clear();
+//                for (RealmImage realmPhoto : realmPhotos) {
+//                    photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
+//                }
+//            }
+//            realm.close();
+//            e.onNext(photos);
+//        });
+//    }
+
+    public Observable<PhotoModel> getObservableSingleDbPhotosOneByOne() {
         return Observable.create( e -> {
             Realm realm = Realm.getDefaultInstance();
             RealmResults<RealmImage> realmPhotos = realm.where(RealmImage.class).findAll();
             if (realmPhotos != null) {
                 photos.clear();
                 for (RealmImage realmPhoto : realmPhotos) {
-                    photos.add(new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri()));
+                    PhotoModel pm = new PhotoModel(realmPhoto.isFavorites(), realmPhoto.getImgUri());
+                    photos.add(pm);
+                    e.onNext(pm);
+                    dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
                 }
             }
             realm.close();
-            e.onNext(photos);
         });
     }
 
 
-    public Observable<RepoEvents> getObservablePhotos() {
-        return photosObservable;
+    public Observable<RepoEvents> getDbRepoEventBus() {
+        return dbRepoEventBus;
     }
 
     public void favoriteIsChanged(PhotoModel pm) {
@@ -143,7 +158,7 @@ public class DbRepository {
             }
         });
         realm.close();
-        photosObservable.onNext(RepoEvents.DB_UPDATED);
+        dbRepoEventBus.onNext(RepoEvents.DB_UPDATED);
     }
 
     public List<PhotoModel> getPhotoCollection() {

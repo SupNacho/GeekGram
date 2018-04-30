@@ -11,11 +11,9 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 public class Repository implements IRepository {
-    private static int count = 0;
     private List<PhotoModel> photos;
-    private PublishSubject<RepoEvents> photosObservable;
+    private PublishSubject<RepoEvents> mainRepoEventBus;
     private Disposable repDisposable;
-    private Observer<RepoEvents> dbRepoObserver;
     private Disposable disposeSubsDb;
     private int tmpPos;
     private PhotoModel tmpPhoto;
@@ -28,9 +26,8 @@ public class Repository implements IRepository {
         this.netRepository = netRepository;
         Timber.d(" ----- OO ----- Repository CREATED");
         photos = new ArrayList<>();
-        count++;
-        photosObservable = PublishSubject.create();
-        dbRepoObserver = new Observer<RepoEvents>() {
+        mainRepoEventBus = PublishSubject.create();
+        Observer<RepoEvents> dbRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
             public void onSubscribe(Disposable d) {
                 disposeSubsDb = d;
@@ -38,8 +35,8 @@ public class Repository implements IRepository {
 
             @Override
             public void onNext(RepoEvents events) {
-                if (events == RepoEvents.DB_UPDATED){
-                    photosObservable.onNext(RepoEvents.UPDATE);
+                if (events == RepoEvents.DB_UPDATED) {
+                    mainRepoEventBus.onNext(RepoEvents.UPDATE);
                 }
             }
 
@@ -53,9 +50,9 @@ public class Repository implements IRepository {
 
             }
         };
-        dbRepository.getObservablePhotos()
+        dbRepository.getDbRepoEventBus()
                 .subscribeOn(Schedulers.io())
-                .subscribe(dbRepoObserver);
+                .subscribe(dbRepoEventBusObserver);
     }
 
     @Override
@@ -76,7 +73,7 @@ public class Repository implements IRepository {
     public void undoDeletion(PhotoModel pm) {
         photos.add(tmpPos, tmpPhoto);
         dbRepository.undoDeletion(pm);
-        photosObservable.onNext(RepoEvents.UPDATE);
+        mainRepoEventBus.onNext(RepoEvents.UPDATE);
     }
 
     @Override
@@ -88,18 +85,29 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public void getUpdatedPhotos() {
+    public void doCollectionsMerge() {
         photos.clear();
-        repDisposable = Observable.merge(netRepository.getNetPhoto(), dbRepository.getObservableDbPhotos())
+        repDisposable = Observable.merge(dbRepository.getObservableSingleDbPhotosOneByOne(),
+                netRepository.getNetSinglePhotoOneByOne())
                 .subscribeOn(Schedulers.io()).subscribe(photoModels -> {
-                    photos.addAll(photoModels);
-                    photosObservable.onNext(RepoEvents.UPDATE);
+                    photos.add(photoModels);
+                    mainRepoEventBus.onNext(RepoEvents.UPDATE);
                 });
     }
 
+//    @Override
+//    public void doCollectionsMerge() {
+//        photos.clear();
+//        repDisposable = Observable.merge(netRepository.getNetPhotoCollection(), dbRepository.getObservableDbPhotosCollection())
+//                .subscribeOn(Schedulers.io()).subscribe(photoModels -> {
+//                    photos.addAll(photoModels);
+//                    mainRepoEventBus.onNext(RepoEvents.UPDATE);
+//                });
+//    }
+
     @Override
-    public Observable<RepoEvents> getObservablePhotos() {
-        return photosObservable;
+    public Observable<RepoEvents> getEvenBus() {
+        return mainRepoEventBus;
     }
 
     @Override
@@ -116,10 +124,5 @@ public class Repository implements IRepository {
     public void disposeTasks() {
         if (repDisposable != null) repDisposable.dispose();
         if (disposeSubsDb != null) disposeSubsDb.dispose();
-    }
-
-    @Override
-    public int getCount() {
-        return count;
     }
 }

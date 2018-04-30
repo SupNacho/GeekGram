@@ -21,12 +21,10 @@ import timber.log.Timber;
 @InjectViewState
 public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
-    private int tempPos;
     private List<PhotoModel> photos;
     private List<PhotoModel> favPhotos;
     @Inject
     DbRepository repository;
-    private Observer<RepoEvents> photoObserver;
     private Scheduler uiScheduler;
     private Disposable subscription;
 
@@ -49,7 +47,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         super.onFirstViewAttach();
         photos = repository.getPhotoCollection();
         getViewState().initUI();
-        photoObserver = new Observer<RepoEvents>() {
+        Observer<RepoEvents> dbRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
             public void onSubscribe(Disposable d) {
                 subscription = d;
@@ -77,10 +75,10 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
             }
         };
         repository
-                .getObservablePhotos()
+                .getDbRepoEventBus()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
+                .subscribe(dbRepoEventBusObserver);
     }
 
 
@@ -111,7 +109,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
             photoTmp = favPhotos.get(pos);
-            tempPos = photos.indexOf(photoTmp);
+            int tempPos = photos.indexOf(photoTmp);
             repository.remove(tempPos);
         }
     }

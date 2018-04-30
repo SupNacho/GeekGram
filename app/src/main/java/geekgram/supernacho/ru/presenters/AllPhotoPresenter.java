@@ -24,9 +24,7 @@ import timber.log.Timber;
 @InjectViewState
 public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
-    private int tempPos;
     private List<PhotoModel> photos;
-    private Observer<RepoEvents> photoObserver;
     private Scheduler uiScheduler;
     private Disposable subscription;
 
@@ -47,7 +45,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void attachView(AllPhotoFragmentView view) {
         super.attachView(view);
         Timber.d("AP AttachView");
-        repository.getUpdatedPhotos();
+        repository.doCollectionsMerge();
         getViewState().updateRecyclerViewAdapter();
     }
 
@@ -57,7 +55,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         photos = repository.getPhotoCollection();
         super.onFirstViewAttach();
         getViewState().initUI();
-        photoObserver = new Observer<RepoEvents>() {
+        Observer<RepoEvents> mainRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
             public void onSubscribe(Disposable d) {
                 subscription = d;
@@ -83,10 +81,10 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         };
 
         repository
-                .getObservablePhotos()
+                .getEvenBus()
                 .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
+                .subscribe(mainRepoEventBusObserver);
     }
 
     @Override
@@ -113,7 +111,6 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
             photoTmp = photos.get(pos);
-            tempPos = pos;
             repository.remove(pos);
         }
     }

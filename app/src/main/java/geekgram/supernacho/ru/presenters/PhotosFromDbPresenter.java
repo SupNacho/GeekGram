@@ -3,8 +3,6 @@ package geekgram.supernacho.ru.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +10,8 @@ import javax.inject.Inject;
 
 import geekgram.supernacho.ru.PhotosFromDbFragmentView;
 import geekgram.supernacho.ru.model.DbRepository;
-import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.RepoEvents;
-import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
@@ -27,7 +23,6 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     private PhotoModel photoTmp;
     private int tempPos;
     private List<PhotoModel> photos;
-    private Observer<RepoEvents> photoObserver;
     private Scheduler uiScheduler;
     private Disposable subscription;
 
@@ -51,7 +46,7 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
         super.onFirstViewAttach();
         photos = repository.getPhotoCollection();
         getViewState().initUI();
-        photoObserver = new Observer<RepoEvents>() {
+        Observer<RepoEvents> dbRepoEventBusObserver = new Observer<RepoEvents>() {
             @Override
             public void onSubscribe(Disposable d) {
                 subscription = d;
@@ -76,10 +71,10 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
             }
         };
         repository
-                .getObservablePhotos()
+                .getDbRepoEventBus()
                 .subscribeOn(Schedulers.io())
                 .observeOn(uiScheduler)
-                .subscribe(photoObserver);
+                .subscribe(dbRepoEventBusObserver);
     }
 
     @Override
