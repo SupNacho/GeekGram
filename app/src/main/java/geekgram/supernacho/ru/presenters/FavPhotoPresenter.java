@@ -110,7 +110,7 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
         if (photos != null && photos.size() > pos) {
             photoTmp = favPhotos.get(pos);
             int tempPos = photos.indexOf(photoTmp);
-            repository.remove(tempPos);
+            repository.remove(photoTmp);
         }
     }
 

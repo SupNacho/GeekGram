@@ -95,16 +95,6 @@ public class Repository implements IRepository {
                 });
     }
 
-//    @Override
-//    public void doCollectionsMerge() {
-//        photos.clear();
-//        repDisposable = Observable.merge(netRepository.getNetPhotoCollection(), dbRepository.getObservableDbPhotosCollection())
-//                .subscribeOn(Schedulers.io()).subscribe(photoModels -> {
-//                    photos.addAll(photoModels);
-//                    mainRepoEventBus.onNext(RepoEvents.UPDATE);
-//                });
-//    }
-
     @Override
     public Observable<RepoEvents> getEvenBus() {
         return mainRepoEventBus;

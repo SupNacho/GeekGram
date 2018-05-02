@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import geekgram.supernacho.ru.model.api.ApiConst;
 import timber.log.Timber;
 
@@ -43,6 +44,22 @@ public class AuthActivity extends AppCompatActivity {
                 "?client_id=" + ApiConst.CLIENT_ID +
                 "&redirect_uri=" + ApiConst.REDIRECT_URI +
                 "&response_type=token");
+    }
+
+    @OnClick(R.id.btn_skip_login)
+    public void btnSkipAuthClick(){
+        frameLayout.removeAllViews();
+        webView.destroy();
+        App.requestToken[0] = "0000";
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        webView.destroy();
+        super.onDestroy();
     }
 
     class AuthWebViewClient extends WebViewClient {

@@ -20,7 +20,7 @@ public class NetRepository {
     }
 
     public Observable<User> getUser(String token){
-        if (NetworkStatus.isOnline()){
+        if (NetworkStatus.isOnline() && !App.requestToken[0].equals("0000")){
             return apiService.getUsersSelf(token);
         } else {
             return Observable.create( e -> {
@@ -34,7 +34,7 @@ public class NetRepository {
     }
 
     public Observable<UserRecent> getUserRecentData(String token){
-        if (NetworkStatus.isOnline()){
+        if (NetworkStatus.isOnline() && !App.requestToken[0].equals("0000")){
             return apiService.getUserRecent(token);
         } else {
             return Observable.create( e -> {
