@@ -30,7 +30,10 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemViewType(int position) {
-        return position % 3;
+        if (favPhotos.get(position).getPhotoSrc().startsWith("http")) {
+            return AViewConstsnts.VIEW_INSTAGRAM;
+        }
+        return AViewConstsnts.VIEW_DB;
     }
 
     @NonNull
@@ -38,7 +41,7 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         switch (viewType) {
-            case 0:
+            case AViewConstsnts.VIEW_INSTAGRAM:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_two, parent, false);
                 return new ViewCardTwo(view);
             default:
@@ -51,24 +54,12 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final PhotoModel photoModel = favPhotos.get(position);
         switch (holder.getItemViewType()) {
-            case 0:
+            case AViewConstsnts.VIEW_INSTAGRAM:
                 if (photoModel.getPhotoSrc() != null) {
                     imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
-                if (photoModel.isFavorite()) {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
-                } else {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
-                }
-                ((ViewCardTwo) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
-                    }
-                });
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
@@ -81,12 +72,9 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 } else {
                     ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
                 }
-                ((ViewCardOne) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
-                    }
+                ((ViewCardOne) holder).favoritesButton.setOnClickListener(view -> {
+                    presenter.setFavorite(photoModel);
+                    notifyDataSetChanged();
                 });
                 break;
         }
@@ -105,43 +93,25 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
+            itemView.setOnLongClickListener(view -> {
+                presenter.deleteDialog(getLayoutPosition());
+                return false;
             });
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 
     class ViewCardTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
-        ImageButton favoritesButton;
 
         ViewCardTwo(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
-            favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
+            itemView.setOnLongClickListener(view -> {
+                presenter.deleteDialog(getLayoutPosition());
+                return false;
             });
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 }

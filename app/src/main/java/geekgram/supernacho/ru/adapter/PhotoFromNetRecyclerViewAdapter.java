@@ -15,9 +15,7 @@ import javax.inject.Inject;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.image.IImageLoader;
-import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 import geekgram.supernacho.ru.presenters.INetFragmentPresenter;
-import timber.log.Timber;
 
 public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
@@ -34,7 +32,10 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
 
     @Override
     public int getItemViewType(int position) {
-        return position % 3;
+        if (photos.get(position).getPhotoSrc().startsWith("http")) {
+            return AViewConstsnts.VIEW_INSTAGRAM;
+        }
+        return AViewConstsnts.VIEW_DB;
     }
 
     @NonNull
@@ -55,25 +56,13 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final PhotoModel photoModel = photos.get(position);
         switch (holder.getItemViewType()) {
-            case 0:
+            case AViewConstsnts.VIEW_INSTAGRAM:
                 if (photoModel.getPhotoSrc() != null) {
                     imageLoader.loadIntoFromNet(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
 
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
-                if (photoModel.isFavorite()) {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
-                } else {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
-                }
-                ((ViewCardTwo) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
-                    }
-                });
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
@@ -86,12 +75,9 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
                 } else {
                     ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
                 }
-                ((ViewCardOne) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-                        notifyDataSetChanged();
-                    }
+                ((ViewCardOne) holder).favoritesButton.setOnClickListener(view -> {
+                    presenter.setFavorite(photoModel);
+                    notifyDataSetChanged();
                 });
                 break;
         }
@@ -110,29 +96,17 @@ public class PhotoFromNetRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 
     class ViewCardTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
-        ImageButton favoritesButton;
 
         ViewCardTwo(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
-            favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 }

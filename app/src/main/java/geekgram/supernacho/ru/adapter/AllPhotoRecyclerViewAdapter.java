@@ -19,7 +19,6 @@ import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
 public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
-    private List<PhotoModel> favPhotos;
     private IFragmentPresenter presenter;
     @Inject
     IImageLoader<ImageView> imageLoader;
@@ -27,12 +26,16 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
-        this.favPhotos = presenter.getFavPhotos();
+//        List<PhotoModel> favPhotos = presenter.getFavPhotos();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position % 3;
+        if (photos.get(position).getPhotoSrc().startsWith("http")) {
+            return AViewConstsnts.VIEW_INSTAGRAM;
+        } else {
+            return AViewConstsnts.VIEW_DB;
+        }
     }
 
     @NonNull
@@ -40,7 +43,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         switch (viewType) {
-            case 0:
+            case AViewConstsnts.VIEW_INSTAGRAM:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_type_two, parent, false);
                 return new ViewCardTwo(view);
             default:
@@ -53,30 +56,18 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final PhotoModel photoModel = photos.get(position);
         switch (holder.getItemViewType()) {
-            case 0:
+            case AViewConstsnts.VIEW_INSTAGRAM:
                 if (photoModel.getPhotoSrc() != null) {
                     imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardTwo) holder).imageView);
 
                 } else {
                     ((ViewCardTwo) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
-                if (photoModel.isFavorite()) {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_on);
-                } else {
-                    ((ViewCardTwo) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
-                }
-                ((ViewCardTwo) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-//                        notifyDataSetChanged();
-                    }
-                });
                 break;
             default:
                 if (photoModel.getPhotoSrc() != null) {
                     imageLoader.loadInto(photoModel.getPhotoSrc(), ((ViewCardOne) holder).imageView);
-                }  else {
+                } else {
                     ((ViewCardOne) holder).imageView.setImageResource(R.drawable.ic_photo);
                 }
                 if (photoModel.isFavorite()) {
@@ -84,13 +75,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 } else {
                     ((ViewCardOne) holder).favoritesButton.setImageResource(R.drawable.ic_favorites_off);
                 }
-                ((ViewCardOne) holder).favoritesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.setFavorite(photoModel);
-//                        notifyDataSetChanged();
-                    }
-                });
+                ((ViewCardOne) holder).favoritesButton.setOnClickListener(view -> presenter.setFavorite(photoModel));
                 break;
         }
     }
@@ -108,43 +93,27 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv);
             favoritesButton = itemView.findViewById(R.id.image_button_favorites);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
+            itemView.setOnLongClickListener(view -> {
+                presenter.deleteDialog(getLayoutPosition());
+                return false;
             });
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 
     class ViewCardTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
-        ImageButton favoritesButton;
+//        ImageButton sourceImageView;
 
         ViewCardTwo(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
-            favoritesButton = itemView.findViewById(R.id.image_button_favorites_cv_2);
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    presenter.deleteDialog(getLayoutPosition());
-                    return false;
-                }
+//            sourceImageView = itemView.findViewById(R.id.iv_favorites_cv_2);
+            itemView.setOnLongClickListener(view -> {
+                presenter.deleteDialog(getLayoutPosition());
+                return false;
             });
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.viewPhoto(getLayoutPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }
 }
