@@ -36,8 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PhotosFromNetFragment extends MvpAppCompatFragment implements PhotosFromNetFragmentView {
 
-    @BindView(R.id.fl_web_view_container_net_fragment)
-    FrameLayout frameLayoutWebView;
     @BindView(R.id.iv_user_net_fragment)
     ImageView ivUserAvatar;
     @BindView(R.id.tv_username_net_fragment)

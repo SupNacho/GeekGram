@@ -46,7 +46,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
         super.attachView(view);
         Timber.d("AP AttachView");
         repository.doCollectionsMerge();
-        getViewState().updateRecyclerViewAdapter();
+//        getViewState().updateRecyclerViewAdapter();
     }
 
     @Override
@@ -139,5 +139,9 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
     public void setFavorite(PhotoModel pm) {
         pm.setFavorite(!pm.isFavorite());
         repository.favoriteIsChanged(pm);
+    }
+
+    public void updateCollections(){
+        repository.doCollectionsMerge();
     }
 }

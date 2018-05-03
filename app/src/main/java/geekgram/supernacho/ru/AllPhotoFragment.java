@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,7 +34,12 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     public static final String IS_FAVORITE = "is_favorite";
 
     private OnFragmentInteractionListener mListener;
-    @BindView(R.id.all_photo_fragment_recycler_view) RecyclerView recyclerView;
+
+    @BindView(R.id.all_photo_fragment_recycler_view)
+    RecyclerView recyclerView;
+    @BindView(R.id.srl_all_hpoto_fragment)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private Unbinder unbinder;
     private AllPhotoRecyclerViewAdapter adapter;
 
@@ -64,7 +70,7 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     }
 
     @ProvidePresenter
-    public AllPhotoPresenter providePresenter(){
+    public AllPhotoPresenter providePresenter() {
         AllPhotoPresenter presenter = new AllPhotoPresenter(AndroidSchedulers.mainThread());
         App.getInstance().getAppComponent().inject(presenter);
         return presenter;
@@ -72,7 +78,8 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
 
     @Override
     public void initUI() {
-        if (recyclerView != null){
+        swipeRefreshLayout.setOnRefreshListener(this::updatePhotoCollection);
+        if (recyclerView != null) {
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
             layoutManager.setOrientation(GridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
@@ -83,7 +90,12 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
 
     }
 
-    public void deletePhoto(final int pos){
+    private void updatePhotoCollection(){
+        presenter.updateCollections();
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void deletePhoto(final int pos) {
         final PhotoModel[] tempPhoto = new PhotoModel[1];
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert

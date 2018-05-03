@@ -1,6 +1,7 @@
 package geekgram.supernacho.ru.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.image.IImageLoader;
@@ -26,7 +28,6 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public AllPhotoRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
-//        List<PhotoModel> favPhotos = presenter.getFavPhotos();
     }
 
     @Override
