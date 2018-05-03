@@ -80,7 +80,35 @@ public class Repository implements IRepository {
     public void remove(int pos) {
         Timber.d("Remove photo from realm");
         tmpPos = pos;
-        dbRepository.remove(photos.get(pos));
+        PhotoModel pm = photos.get(pos);
+        if (pm.getPhotoId().equals("db_stored")) {
+            dbRepository.remove(photos.get(pos));
+        } else {
+            netRepository.deletePhoto(pm.getPhotoId())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new Observer<Void>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(Void aVoid) {
+
+                    Timber.d("|||| -> Some thing come");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+        }
         tmpPhoto = photos.remove(pos);
     }
 

@@ -2,6 +2,7 @@ package geekgram.supernacho.ru;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 
 import geekgram.supernacho.ru.di.AppComponent;
@@ -37,6 +38,7 @@ public class App extends Application {
                 .migration(new MyRealmMigration())
                 .build();
         Realm.setDefaultConfiguration(configuration);
+        Stetho.initializeWithDefaults(this);
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
