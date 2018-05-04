@@ -7,7 +7,9 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import geekgram.supernacho.ru.App;
 import geekgram.supernacho.ru.R;
+import timber.log.Timber;
 
 public final class NavigationDrawerSwitch {
     public static void switchIt(WeakReference<Context> weakContext, int id){
@@ -26,7 +28,10 @@ public final class NavigationDrawerSwitch {
                     if (!(context instanceof ThemeActivity)) {
                         Intent themeIntent = new Intent(context, ThemeActivity.class);
                         context.startActivity(themeIntent);
-                        if (context instanceof MainActivity) ((MainActivity) context).finish();
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).finish();
+                            context = null;
+                        }
                     } else {
                         Log.d("++", "its Theme");
                     }
