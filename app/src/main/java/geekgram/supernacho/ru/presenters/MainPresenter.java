@@ -4,17 +4,14 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.App;
-import geekgram.supernacho.ru.MainView;
+import geekgram.supernacho.ru.view.MainView;
 import geekgram.supernacho.ru.model.IRepository;
-import geekgram.supernacho.ru.model.Repository;
 import io.reactivex.Single;
 import timber.log.Timber;
 
@@ -31,13 +28,12 @@ public class MainPresenter extends MvpPresenter<MainView> implements IMainPresen
     public String addPhoto() {
         if (currentPhotoPath != null) {
             repository.addPhoto(false, currentPhotoPath);
-            return currentPhotoPath;
         }
         return currentPhotoPath;
     }
 
     @Override
-    public Single<File> createPhotoFile(final File location, final String child) throws IOException{
+    public Single<File> createPhotoFile(final File location, final String child){
         return Single.fromCallable(() -> {
             if (location.exists()) {
                 Timber.d("No dir");

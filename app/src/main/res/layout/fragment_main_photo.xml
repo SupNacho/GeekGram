@@ -1,39 +1,42 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             tools:context="geekgram.supernacho.ru.MainPhotoFragment">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="geekgram.supernacho.ru.view.MainPhotoFragment">
 
     <FrameLayout
         android:id="@+id/containerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="@dimen/main_photo_fragment_frame_layout_bottom_margin" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
+        style="?attr/fabStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_white_24dp"
         app:layout_constraintBottom_toTopOf="@id/navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        style="?attr/fabStyle"
-        android:src="@drawable/ic_add_white_24dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
         style="?attr/bottomNavigationStyle"
+        android:layout_width="@dimen/main_ph_frag_btm_nav_width"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/main_ph_frag_margin_end"
+        android:layout_marginStart="@dimen/main_ph_frag_btm_nav_margin_start"
         android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/navigation" />
+        app:menu="@menu/navigation"
+        android:layout_marginRight="@dimen/main_ph_frag_margin_end"
+        android:layout_marginLeft="@dimen/main_ph_frag_btm_nav_margin_start" />
 
 
 </android.support.constraint.ConstraintLayout>

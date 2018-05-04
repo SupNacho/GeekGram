@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import android.Manifest;
 import android.content.Context;
@@ -22,7 +22,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -31,7 +30,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
@@ -39,7 +37,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import geekgram.supernacho.ru.adapter.PhotoFragmentsAdapter;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.BuildConfig;
+import geekgram.supernacho.ru.R;
+import geekgram.supernacho.ru.view.adapter.PhotoFragmentsAdapter;
 import geekgram.supernacho.ru.presenters.MainPresenter;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,14 +51,14 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends MvpAppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AllPhotoFragment.OnFragmentInteractionListener,
-        MainView{
+        implements NavigationView.OnNavigationItemSelectedListener, MainView{
 
     public static final int CAMERA_CAPTURE = 1;
     public static final int READ_EXT_STORAGE_PERMISSION_REQUEST_CODE = 1;
     public static final int WRITE_EX_STORAGE_PERMISSION_REQUEST_CODE = 2;
 
-    @Inject App app;
+    @Inject
+    App app;
 
     @BindView(R.id.vp_container)
     ViewPager viewPager;
@@ -82,7 +83,7 @@ public class MainActivity extends MvpAppCompatActivity
         super.onCreate(savedInstanceState);
         App.getInstance().getAppComponent().inject(this);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("Roboto-Regular.ttf")
+                .setDefaultFontPath(getResources().getString(R.string.font_name))
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setTheme(new AppSharedPreferences(this).getSavedTheme());
@@ -107,13 +108,13 @@ public class MainActivity extends MvpAppCompatActivity
 
     private void initPageAdapter() {
         photoFragmentsPageAdapter = new PhotoFragmentsAdapter(getSupportFragmentManager());
-        photoFragmentsPageAdapter.addFragment(mainFragment, "Main");
-        photoFragmentsPageAdapter.addFragment(favoriteFragment, "Favorites");
+        photoFragmentsPageAdapter.addFragment(mainFragment, getResources().getString(R.string.fragment_main_title));
+        photoFragmentsPageAdapter.addFragment(favoriteFragment, getResources().getString(R.string.fragment_fav_title));
     }
 
     private void initFragment() {
-        mainFragment = MainPhotoFragment.newInstance(null, null);
-        favoriteFragment = FavoritesFragment.newInstance(null, null);
+        mainFragment = MainPhotoFragment.newInstance();
+        favoriteFragment = FavoritesFragment.newInstance();
     }
 
     private void initNavDrawer() {
@@ -152,10 +153,8 @@ public class MainActivity extends MvpAppCompatActivity
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             final File[] photoFile = {null};
-            try {
-
                 presenter.createPhotoFile(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DCIM), "Camera")
+                        Environment.DIRECTORY_DCIM), getResources().getString(R.string.photo_child_dir))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<File>() {
@@ -186,9 +185,6 @@ public class MainActivity extends MvpAppCompatActivity
                                 errorToast("Error occurred while creating the File!" + e);
                             }
                         });
-            } catch (IOException ex) {
-                errorToast("Error occurred while creating the File!");
-            }
         }
     }
 
@@ -217,26 +213,6 @@ public class MainActivity extends MvpAppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
-
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        //        // TODO: 06.03.2018 implement fragment interaction
     }
 
 

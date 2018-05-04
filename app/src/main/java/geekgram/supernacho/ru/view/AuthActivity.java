@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +15,8 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.api.ApiConst;
 import timber.log.Timber;
 
@@ -40,10 +42,7 @@ public class AuthActivity extends AppCompatActivity {
         webView = new WebView(Objects.requireNonNull(getApplicationContext()));
         frameLayout.addView(webView);
         webView.setWebViewClient(new AuthWebViewClient());
-        webView.loadUrl("https://api.instagram.com/oauth/authorize/" +
-                "?client_id=" + ApiConst.CLIENT_ID +
-                "&redirect_uri=" + ApiConst.REDIRECT_URI +
-                "&response_type=token");
+        webView.loadUrl(ApiConst.AUTH_URL);
     }
 
     @OnClick(R.id.btn_skip_login)
@@ -86,7 +85,7 @@ public class AuthActivity extends AppCompatActivity {
             Timber.d(url);
             if (url.startsWith(ApiConst.REDIRECT_URI)) {
                 Timber.d(url);
-                String parts[] = url.split("=");
+                String parts[] = url.split(ApiConst.TOKEN_SPLIT_REGEX);
                 App.requestToken[0] = parts[1];
                 Timber.d(App.requestToken[0]);
                 progressBar.setVisibility(View.INVISIBLE);

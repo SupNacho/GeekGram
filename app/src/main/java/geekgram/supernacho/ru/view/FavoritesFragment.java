@@ -1,10 +1,10 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,23 +19,18 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import geekgram.supernacho.ru.adapter.FavPhotoRecyclerViewAdapter;
-import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
+import geekgram.supernacho.ru.view.adapter.FavPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.presenters.FavPhotoPresenter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static geekgram.supernacho.ru.AllPhotoFragment.IMG_POS;
-import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
-import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IMG_POS;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IMG_URI;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IS_FAVORITE;
 
 
 public class FavoritesFragment extends MvpAppCompatFragment implements FavFragmentView{
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     @BindView(R.id.favorites_fragment_recycler_view) RecyclerView recyclerView;
     private Unbinder unbinder;
@@ -49,26 +44,17 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
         // Required empty public constructor
     }
 
-    public static FavoritesFragment newInstance(String param1, String param2) {
-        FavoritesFragment fragment = new FavoritesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static FavoritesFragment newInstance() {
+        return new FavoritesFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -100,23 +86,15 @@ public class FavoritesFragment extends MvpAppCompatFragment implements FavFragme
     }
 
     public void deletePhoto(final int pos){
-        final PhotoModel[] tempPhoto = new PhotoModel[1];
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert
                 .setMessage(R.string.alert_delete_msg)
                 .setCancelable(true)
                 .setNegativeButton(R.string.alert_negative_txt, null)
-                .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.deletePhoto(pos);
-                        Snackbar.make(recyclerView, "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                presenter.undoDeletion();
-                            }
-                        }).show();
-                    }
+                .setPositiveButton(R.string.alert_positive_txt, (dialogInterface, i) -> {
+                    presenter.deletePhoto(pos);
+                    Snackbar.make(recyclerView, R.string.snkbar_photo_delete_text, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.snkbar_photo_delete_bnt, view -> presenter.undoDeletion()).show();
                 })
                 .show();
 

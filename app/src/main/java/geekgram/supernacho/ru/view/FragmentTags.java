@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 
 public interface FragmentTags {

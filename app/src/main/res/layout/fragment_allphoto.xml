@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="geekgram.supernacho.ru.AllPhotoFragment">
+    tools:context="geekgram.supernacho.ru.view.AllPhotoFragment">
 <android.support.v4.widget.SwipeRefreshLayout
-    android:id="@+id/srl_all_hpoto_fragment"
+    android:id="@+id/srl_all_photo_fragment"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <android.support.v7.widget.RecyclerView

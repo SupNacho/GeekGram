@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="geekgram.supernacho.ru.AllPhotoFragment">
+    tools:context="geekgram.supernacho.ru.view.AllPhotoFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/db_photo_fragment_recycler_view"

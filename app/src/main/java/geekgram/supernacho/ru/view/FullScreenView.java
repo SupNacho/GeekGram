@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;

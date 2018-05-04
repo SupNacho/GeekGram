@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
+
+import geekgram.supernacho.ru.R;
 
 public final class NavigationDrawerSwitch {
     public static void switchIt(WeakReference<Context> weakContext, int id){
@@ -24,12 +26,13 @@ public final class NavigationDrawerSwitch {
                     if (!(context instanceof ThemeActivity)) {
                         Intent themeIntent = new Intent(context, ThemeActivity.class);
                         context.startActivity(themeIntent);
+                        if (context instanceof MainActivity) ((MainActivity) context).finish();
                     } else {
                         Log.d("++", "its Theme");
                     }
                     break;
                 default:
-                    Toast.makeText(context, "Menu Item not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.navdrawer_menu_item_not_found, Toast.LENGTH_SHORT).show();
             }
         }
     }

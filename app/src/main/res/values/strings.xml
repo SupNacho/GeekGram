@@ -2,8 +2,8 @@
     <string name="app_name">SupNachoPhotoRep</string>
     <string name="button_test_1">TEST OF ELEVATION</string>
     <string name="text_view_1">Hello World!</string>
-    <string name="button_theme_one">theme one</string>
-    <string name="button_theme_two">theme two</string>
+    <string name="button_theme_one">Lime theme</string>
+    <string name="button_theme_two">Fox theme</string>
     <string name="title_activity_main">PhotoBro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -22,8 +22,29 @@
     <string name="alert_positive_txt">Yes</string>
 
     <string name="title_activity_fullscreen_photo">FullscreenPhotoActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="btn_no_login">continue without login</string>
     <string name="card_view_source_icon">Source icon</string>
+    <string name="snkbar_photo_delete_text">Photo deleted</string>
+    <string name="snkbar_photo_delete_bnt">UNDO</string>
+    <string name="fragment_main_title">Main</string>
+    <string name="fragment_fav_title">Favorites</string>
+    <string name="navdrawer_menu_item_not_found">Menu Item not found</string>
+
+    <!-- System names -->
+    <string name="font_name">Roboto-Regular.ttf</string>
+    <string name="photo_child_dir">Camera</string>
+    <string name="theme_zero">Green theme</string>
+    <string name="application_logo">Application logo</string>
+    <string name="fullscreen_content_holder">Fullscreen content holder</string>
+    <string name="fullscreen_activity_fav_button_descpition">Fullscreen activity fav button</string>
+    <string name="tab_item_main">Main</string>
+    <string name="tab_item_favorites">Favorites</string>
+    <string name="screenshot_of_lime_theme_desc">Screenshot of lime theme</string>
+    <string name="screenshot_of_fox_theme_desc">Screenshot of fox theme</string>
+    <string name="screenshot_of_green_theme_desc">Screenshot of green theme</string>
+    <string name="net_frag_avatar_desc">avatar</string>
+    <string name="nav_header_app_name">PhotoBro</string>
+    <string name="nav_header_description">Simple photomanager for local storage and Instagram</string>
+    <string name="nav_drawer_app_logo">App logo</string>
+
 </resources>

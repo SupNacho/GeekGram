@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru.adapter;
+package geekgram.supernacho.ru.view.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class PhotoFragmentsAdapter extends FragmentPagerAdapter {
-    List<Fragment> fragments = new ArrayList<>();
-    Map<Fragment, String> fragmentsTitle = new HashMap<>();
+    private List<Fragment> fragments = new ArrayList<>();
+    private Map<Fragment, String> fragmentsTitle = new HashMap<>();
 
     public PhotoFragmentsAdapter(FragmentManager fm) {
         super(fm);

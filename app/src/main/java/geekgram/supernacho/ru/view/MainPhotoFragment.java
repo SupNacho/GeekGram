@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 
 import android.os.Bundle;
@@ -16,16 +16,12 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import geekgram.supernacho.ru.R;
 
-import static geekgram.supernacho.ru.MainActivity.CAMERA_CAPTURE;
+import static geekgram.supernacho.ru.view.MainActivity.CAMERA_CAPTURE;
 
 
 public class MainPhotoFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     private Fragment allPhotoFragment;
     private Fragment dbFragment;
@@ -68,22 +64,13 @@ public class MainPhotoFragment extends Fragment {
     public MainPhotoFragment() {
     }
 
-    public static MainPhotoFragment newInstance(String param1, String param2) {
-        MainPhotoFragment fragment = new MainPhotoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static MainPhotoFragment newInstance() {
+        return new MainPhotoFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override

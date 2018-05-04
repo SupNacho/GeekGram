@@ -5,7 +5,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import geekgram.supernacho.ru.model.DbRepository;
-import geekgram.supernacho.ru.model.IRepository;
 
 @Singleton
 @Module

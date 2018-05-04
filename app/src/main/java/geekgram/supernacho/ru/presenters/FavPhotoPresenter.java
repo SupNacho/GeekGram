@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.FavFragmentView;
+import geekgram.supernacho.ru.view.FavFragmentView;
 import geekgram.supernacho.ru.model.DbRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.RepoEvents;
@@ -109,7 +109,6 @@ public class FavPhotoPresenter extends MvpPresenter<FavFragmentView> implements 
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
             photoTmp = favPhotos.get(pos);
-            int tempPos = photos.indexOf(photoTmp);
             repository.remove(photoTmp);
         }
     }

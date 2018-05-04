@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@android:color/black"
-             tools:context="geekgram.supernacho.ru.FullscreenPhotoActivity">
+             tools:context="geekgram.supernacho.ru.view.FullscreenPhotoActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:keepScreenOn="true"/>
+        android:keepScreenOn="true"
+        android:contentDescription="@string/fullscreen_content_holder" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -37,7 +38,8 @@
                 android:background="@android:color/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_favorites_off"/>
+                android:src="@drawable/ic_favorites_off"
+                android:contentDescription="@string/fullscreen_activity_fav_button_descpition" />
 
         </LinearLayout>
     </FrameLayout>

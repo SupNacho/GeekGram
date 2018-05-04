@@ -5,7 +5,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.FullScreenView;
+import geekgram.supernacho.ru.view.FullScreenView;
 import geekgram.supernacho.ru.model.IRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 

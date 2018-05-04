@@ -43,7 +43,7 @@ public class App extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
-        RxJavaPlugins.setErrorHandler(throwable -> Timber.d("%s", throwable.getCause()));
+        RxJavaPlugins.setErrorHandler(throwable -> Timber.d("%s", throwable.getCause().getMessage()));
     }
 
     public static App getInstance(){

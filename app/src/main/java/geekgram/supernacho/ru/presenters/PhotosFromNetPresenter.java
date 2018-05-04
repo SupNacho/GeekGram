@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.PhotosFromNetFragmentView;
+import geekgram.supernacho.ru.view.PhotosFromNetFragmentView;
 import geekgram.supernacho.ru.model.NetRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.api.ApiConst;
@@ -105,7 +105,7 @@ public class PhotosFromNetPresenter extends MvpPresenter<PhotosFromNetFragmentVi
             if ((pm = photos.get(pos)) != null && pm.getPhotoSrc() != null) {
                 getViewState().startViewPhoto(pos, pm.getPhotoSrc(), pm.isFavorite());
             } else {
-                Timber.d("---- Fuckup with viewing photo: %d %s %s", pos, photos.get(pos).getPhotoSrc(), photos.get(pos).isFavorite());
+                Timber.d("---- Fucked with viewing photo: %d %s %s", pos, photos.get(pos).getPhotoSrc(), photos.get(pos).isFavorite());
             }
         }
     }

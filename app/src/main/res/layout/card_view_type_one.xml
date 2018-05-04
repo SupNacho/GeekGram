@@ -6,10 +6,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     style="?attr/cardViewOneStyle"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="@dimen/card_view_corner_rad"
     app:cardUseCompatPadding="true"
-    android:padding="8dp"
-    android:layout_margin="8dp">
+    android:padding="@dimen/card_view_padding"
+    android:layout_margin="@dimen/card_view_margin">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/relative_layout_cv_one"
@@ -32,7 +32,7 @@
             android:id="@+id/image_button_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/card_view_margin"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_favorites_off"
             app:layout_constraintTop_toTopOf="@id/image_view_cv"
@@ -42,7 +42,7 @@
             android:id="@+id/iv_sd_src"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/card_view_margin"
             android:src="@drawable/ic_sd_card"
             app:layout_constraintTop_toTopOf="@id/image_view_cv"
             app:layout_constraintStart_toStartOf="@id/image_view_cv"

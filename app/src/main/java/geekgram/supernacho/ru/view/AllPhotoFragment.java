@@ -1,11 +1,10 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,11 +17,14 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import geekgram.supernacho.ru.adapter.AllPhotoRecyclerViewAdapter;
-import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
+import geekgram.supernacho.ru.view.adapter.AllPhotoRecyclerViewAdapter;
 import geekgram.supernacho.ru.presenters.AllPhotoPresenter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -33,11 +35,9 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     public static final String IMG_POS = "img_pos";
     public static final String IS_FAVORITE = "is_favorite";
 
-    private OnFragmentInteractionListener mListener;
-
     @BindView(R.id.all_photo_fragment_recycler_view)
     RecyclerView recyclerView;
-    @BindView(R.id.srl_all_hpoto_fragment)
+    @BindView(R.id.srl_all_photo_fragment)
     SwipeRefreshLayout swipeRefreshLayout;
 
     private Unbinder unbinder;
@@ -50,9 +50,9 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     }
 
 
+    @NonNull
     public static AllPhotoFragment newInstance() {
-        AllPhotoFragment fragment = new AllPhotoFragment();
-        return fragment;
+        return new AllPhotoFragment();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_allphoto, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -96,29 +96,21 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     }
 
     public void deletePhoto(final int pos) {
-        final PhotoModel[] tempPhoto = new PhotoModel[1];
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert
                 .setMessage(R.string.alert_delete_msg)
                 .setCancelable(true)
                 .setNegativeButton(R.string.alert_negative_txt, null)
-                .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.deletePhoto(pos);
-                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab),
-                                "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo",
-                                view -> presenter.undoDeletion()).show();
-                    }
+                .setPositiveButton(R.string.alert_positive_txt, (dialogInterface, i) -> {
+                    presenter.deletePhoto(pos);
+                    Snackbar.make(Objects.requireNonNull(Objects.requireNonNull(getParentFragment())
+                                    .getView()).findViewById(R.id.fab),
+                            R.string.snkbar_photo_delete_text, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.snkbar_photo_delete_bnt,
+                            view -> presenter.undoDeletion()).show();
                 })
                 .show();
 
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     public AllPhotoRecyclerViewAdapter getAdapter() {
@@ -128,22 +120,11 @@ public class AllPhotoFragment extends MvpAppCompatFragment implements AllPhotoFr
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 
     @Override

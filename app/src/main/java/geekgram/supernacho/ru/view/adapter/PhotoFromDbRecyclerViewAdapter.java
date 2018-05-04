@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru.adapter;
+package geekgram.supernacho.ru.view.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,12 +14,12 @@ import javax.inject.Inject;
 
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
 public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoModel> photos;
-    private List<PhotoModel> favPhotos;
     private IFragmentPresenter presenter;
     @Inject
     IImageLoader<ImageView> imageLoader;
@@ -27,12 +27,11 @@ public class PhotoFromDbRecyclerViewAdapter extends RecyclerView.Adapter<Recycle
     public PhotoFromDbRecyclerViewAdapter(IFragmentPresenter presenter) {
         this.presenter = presenter;
         this.photos = presenter.getPhotos();
-        this.favPhotos = presenter.getFavPhotos();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (photos.get(position).getPhotoSrc().startsWith("http")) {
+        if (photos.get(position).getPhotoSrc().startsWith(ApiConst.NET_URI_STARTS)) {
             return AViewConstsnts.VIEW_INSTAGRAM;
         }
         return AViewConstsnts.VIEW_DB;

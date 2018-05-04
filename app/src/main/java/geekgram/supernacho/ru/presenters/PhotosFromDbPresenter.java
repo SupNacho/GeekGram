@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.PhotosFromDbFragmentView;
+import geekgram.supernacho.ru.view.PhotosFromDbFragmentView;
 import geekgram.supernacho.ru.model.DbRepository;
 import geekgram.supernacho.ru.model.PhotoModel;
 import geekgram.supernacho.ru.model.RepoEvents;
@@ -21,7 +21,6 @@ import timber.log.Timber;
 @InjectViewState
 public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView> implements IFragmentPresenter {
     private PhotoModel photoTmp;
-    private int tempPos;
     private List<PhotoModel> photos;
     private Scheduler uiScheduler;
     private Disposable subscription;
@@ -101,14 +100,13 @@ public class PhotosFromDbPresenter extends MvpPresenter<PhotosFromDbFragmentView
     public void deletePhoto(int pos) {
         if (photos != null && photos.size() > pos) {
             photoTmp = photos.get(pos);
-            tempPos = pos;
             repository.remove(photoTmp);
         }
     }
 
     @Override
     public void undoDeletion() {
-        repository.addPhoto(tempPos, photoTmp);
+        repository.undoDeletion(photoTmp);
     }
 
     @Override

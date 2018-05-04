@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,14 +20,16 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.FullScreenPresenter;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static geekgram.supernacho.ru.AllPhotoFragment.IMG_POS;
-import static geekgram.supernacho.ru.AllPhotoFragment.IMG_URI;
-import static geekgram.supernacho.ru.AllPhotoFragment.IS_FAVORITE;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IMG_POS;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IMG_URI;
+import static geekgram.supernacho.ru.view.AllPhotoFragment.IS_FAVORITE;
 
 public class FullscreenPhotoActivity extends MvpAppCompatActivity implements FullScreenView{
     private static final boolean AUTO_HIDE = true;
@@ -76,7 +78,8 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
         }
     };
     private boolean mVisible;
-    private final Runnable mHideRunnable = () -> hide();
+    private final Runnable mHideRunnable = this::hide;
+    @SuppressLint("ClickableViewAccessibility")
     private final View.OnTouchListener mDelayHideTouchListener = (view, motionEvent) -> {
         if (AUTO_HIDE) {
             delayedHide(AUTO_HIDE_DELAY_MILLIS);
@@ -112,6 +115,7 @@ public class FullscreenPhotoActivity extends MvpAppCompatActivity implements Ful
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initUI() {
         mContentView.setOnClickListener(view -> toggle());
         favButton.setOnTouchListener(mDelayHideTouchListener);

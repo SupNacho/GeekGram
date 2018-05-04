@@ -1,12 +1,11 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,11 +17,14 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import geekgram.supernacho.ru.adapter.PhotoFromDbRecyclerViewAdapter;
-import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
+import geekgram.supernacho.ru.view.adapter.PhotoFromDbRecyclerViewAdapter;
 import geekgram.supernacho.ru.presenters.PhotosFromDbPresenter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -33,7 +35,6 @@ public class PhotosFromDbFragment extends MvpAppCompatFragment implements Photos
     public static final String IMG_POS = "img_pos";
     public static final String IS_FAVORITE = "is_favorite";
 
-    private PhotosFromDbFragment.OnFragmentInteractionListener mListener;
     @BindView(R.id.db_photo_fragment_recycler_view)
     RecyclerView recyclerView;
     private Unbinder unbinder;
@@ -47,8 +48,7 @@ public class PhotosFromDbFragment extends MvpAppCompatFragment implements Photos
 
 
     public static PhotosFromDbFragment newInstance() {
-        PhotosFromDbFragment fragment = new PhotosFromDbFragment();
-        return fragment;
+        return new PhotosFromDbFragment();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PhotosFromDbFragment extends MvpAppCompatFragment implements Photos
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_db, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -86,29 +86,20 @@ public class PhotosFromDbFragment extends MvpAppCompatFragment implements Photos
     }
 
     public void deletePhoto(final int pos){
-        final PhotoModel[] tempPhoto = new PhotoModel[1];
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert
                 .setMessage(R.string.alert_delete_msg)
                 .setCancelable(true)
                 .setNegativeButton(R.string.alert_negative_txt, null)
-                .setPositiveButton(R.string.alert_positive_txt, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.deletePhoto(pos);
-                        Snackbar.make(getParentFragment().getView().findViewById(R.id.fab),
-                                "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo",
-                                view -> presenter.undoDeletion()).show();
-                    }
+                .setPositiveButton(R.string.alert_positive_txt, (dialogInterface, i) -> {
+                    presenter.deletePhoto(pos);
+                    Snackbar.make(Objects.requireNonNull(Objects.requireNonNull(getParentFragment())
+                                    .getView()).findViewById(R.id.fab),
+                            "Photo deleted", Snackbar.LENGTH_LONG).setAction("Undo",
+                            view -> presenter.undoDeletion()).show();
                 })
                 .show();
 
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     public PhotoFromDbRecyclerViewAdapter getAdapter() {
@@ -123,11 +114,6 @@ public class PhotosFromDbFragment extends MvpAppCompatFragment implements Photos
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 
     @Override

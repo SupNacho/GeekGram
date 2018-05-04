@@ -20,16 +20,16 @@
         android:supportsRtl="true"
         android:theme="@style/ThemeStandard.YellowBlue">
         <activity
-            android:name=".ThemeActivity"
+            android:name=".view.ThemeActivity"
             android:theme="@style/ThemeStandard.YellowBlue"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:clearTaskOnLaunch="true"
             android:label="@string/title_activity_main"
             android:launchMode="singleTop"
             android:theme="@style/ThemeStandard.YellowBlue"/>
         <activity
-            android:name=".AuthActivity"
+            android:name=".view.AuthActivity"
             android:clearTaskOnLaunch="true"
             android:label="@string/title_activity_main"
             android:launchMode="singleTop"
@@ -51,7 +51,7 @@
         </provider>
 
         <activity
-            android:name=".FullscreenPhotoActivity"
+            android:name=".view.FullscreenPhotoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_photo"
             android:theme="@style/FullscreenTheme"/>

@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru.adapter;
+package geekgram.supernacho.ru.view.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
@@ -30,7 +31,7 @@ public class FavPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemViewType(int position) {
-        if (favPhotos.get(position).getPhotoSrc().startsWith("http")) {
+        if (favPhotos.get(position).getPhotoSrc().startsWith(ApiConst.NET_URI_STARTS)) {
             return AViewConstsnts.VIEW_INSTAGRAM;
         }
         return AViewConstsnts.VIEW_DB;

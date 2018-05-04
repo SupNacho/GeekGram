@@ -1,7 +1,6 @@
-package geekgram.supernacho.ru.adapter;
+package geekgram.supernacho.ru.view.adapter;
 
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import geekgram.supernacho.ru.R;
 import geekgram.supernacho.ru.model.PhotoModel;
+import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.image.IImageLoader;
 import geekgram.supernacho.ru.presenters.IFragmentPresenter;
 
@@ -32,7 +31,7 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemViewType(int position) {
-        if (photos.get(position).getPhotoSrc().startsWith("http")) {
+        if (photos.get(position).getPhotoSrc().startsWith(ApiConst.NET_URI_STARTS)) {
             return AViewConstsnts.VIEW_INSTAGRAM;
         } else {
             return AViewConstsnts.VIEW_DB;
@@ -104,16 +103,10 @@ public class AllPhotoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     class ViewCardTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
-//        ImageButton sourceImageView;
 
         ViewCardTwo(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_cv2);
-//            sourceImageView = itemView.findViewById(R.id.iv_favorites_cv_2);
-            itemView.setOnLongClickListener(view -> {
-                presenter.deleteDialog(getLayoutPosition());
-                return false;
-            });
             itemView.setOnClickListener(view -> presenter.viewPhoto(getLayoutPosition()));
         }
     }

@@ -1,4 +1,4 @@
-package geekgram.supernacho.ru;
+package geekgram.supernacho.ru.view;
 
 
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +23,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import geekgram.supernacho.ru.adapter.PhotoFromNetRecyclerViewAdapter;
+import geekgram.supernacho.ru.App;
+import geekgram.supernacho.ru.R;
+import geekgram.supernacho.ru.view.adapter.PhotoFromNetRecyclerViewAdapter;
 import geekgram.supernacho.ru.model.api.ApiConst;
 import geekgram.supernacho.ru.model.api.ApiService;
 import geekgram.supernacho.ru.model.image.IImageLoader;

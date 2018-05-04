@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import geekgram.supernacho.ru.AllPhotoFragmentView;
+import geekgram.supernacho.ru.view.AllPhotoFragmentView;
 import geekgram.supernacho.ru.model.DbRepository;
 import geekgram.supernacho.ru.model.IImageCache;
 import geekgram.supernacho.ru.model.IRepository;
@@ -132,7 +132,7 @@ public class AllPhotoPresenter extends MvpPresenter<AllPhotoFragmentView> implem
 
     @Override
     public void favoriteIsChanged() {
-        // TODO: 31.03.2018 Вероятно надо разнести интерфейс фрагментов общие фото и избранное на два разных.
+
     }
 
     @Override

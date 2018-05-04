@@ -15,7 +15,7 @@ import geekgram.supernacho.ru.model.entity.RealmImage;
 import io.realm.Realm;
 import timber.log.Timber;
 
-public class IstagramCache implements IImageCache{
+public class InstagramCache implements IImageCache{
     private static final String IMAGE_FOLDER_NAME = "inst_image";
 
     @Override
@@ -70,15 +70,6 @@ public class IstagramCache implements IImageCache{
                 }
             });
         realm.close();
-
-//        Realm.getDefaultInstance().executeTransactionAsync(realm ->
-//        {
-//            RealmCachedImage cachedImage = new RealmCachedImage();
-//            cachedImage.setUrl(url);
-//            cachedImage.setPath(imageFile.toString());
-//            realm.copyToRealm(cachedImage);
-//        });
-
         return imageFile;
     }
 

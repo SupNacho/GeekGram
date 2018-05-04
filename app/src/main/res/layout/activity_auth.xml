@@ -6,18 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AuthActivity">
+    tools:context=".view.AuthActivity">
     <ImageView
         android:id="@+id/iv_logo_auth_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/logo_bg_color"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/photobro"/>
+        android:src="@drawable/photobro"
+        android:contentDescription="@string/application_logo" />
     <ProgressBar
         android:id="@+id/pb_auth_activity"
         android:layout_width="match_parent"
-        android:layout_height="15dp"
+        android:layout_height="@dimen/progress_bar_height_auth_activity"
         android:background="@color/logo_bg_color"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:indeterminate="true"/>

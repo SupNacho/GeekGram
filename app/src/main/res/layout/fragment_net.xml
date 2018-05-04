@@ -4,41 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="20dp"
-    tools:context="geekgram.supernacho.ru.PhotosFromNetFragment">
+    tools:context="geekgram.supernacho.ru.view.PhotosFromNetFragment">
 
+    <ImageView
+        android:id="@+id/iv_user_net_fragment"
+        android:layout_width="@dimen/net_frag_avatar_width"
+        android:layout_height="@dimen/net_frag_avatar_height"
+        android:contentDescription="@string/net_frag_avatar_desc"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/tv_username_net_fragment"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_photo" />
 
+    <TextView
+        android:id="@+id/tv_username_net_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/net_frag_username_margin_left"
+        android:layout_marginStart="@dimen/net_frag_username_margin_start"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user_net_fragment"
+        app:layout_constraintLeft_toRightOf="@id/iv_user_net_fragment"
+        app:layout_constraintTop_toTopOf="@id/iv_user_net_fragment"
+        tools:text="UserName" />
 
-
-        <ImageView
-            android:id="@+id/iv_user_net_fragment"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/tv_username_net_fragment"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="avatar"
-            tools:src="@drawable/ic_photo" />
-
-        <TextView
-            android:id="@+id/tv_username_net_fragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_user_net_fragment"
-            app:layout_constraintLeft_toRightOf="@id/iv_user_net_fragment"
-            app:layout_constraintTop_toTopOf="@id/iv_user_net_fragment"
-            tools:text="UserName" />
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/srl_net_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:paddingBottom="60dp"
+        android:layout_marginTop="@dimen/net_frag_swipe_margin_top"
+        android:paddingBottom="@dimen/net_frag_swipe_padding_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_user_net_fragment" >
+        app:layout_constraintTop_toBottomOf="@id/iv_user_net_fragment">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_net_fragment"

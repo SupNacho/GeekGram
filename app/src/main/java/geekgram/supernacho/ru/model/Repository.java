@@ -17,8 +17,8 @@ public class Repository implements IRepository {
     private Disposable disposeSubsDb;
     private int tmpPos;
     private PhotoModel tmpPhoto;
-    DbRepository dbRepository;
-    NetRepository netRepository;
+    private DbRepository dbRepository;
+    private NetRepository netRepository;
 
 
     public Repository(DbRepository dbRepository, NetRepository netRepository) {

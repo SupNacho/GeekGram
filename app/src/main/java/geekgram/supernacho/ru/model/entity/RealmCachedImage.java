@@ -3,8 +3,8 @@ package geekgram.supernacho.ru.model.entity;
 import io.realm.RealmObject;
 
 public class RealmCachedImage extends RealmObject {
-        String url;
-        String path;
+        private String url;
+        private String path;
 
         public void setUrl(String url)
         {
