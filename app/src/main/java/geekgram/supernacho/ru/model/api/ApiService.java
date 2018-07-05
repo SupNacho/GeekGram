@@ -16,6 +16,6 @@ public interface ApiService {
     @GET("v1/users/self/")
     Observable<User> getUsersSelf(@Query("access_token") String accessToken);
 
-    @DELETE("/v1/media/{media}")
+    @DELETE("v1/media/{media}")
     Observable<Void> deleteMedia(@Path("media") String mediaId, @Query("access_token") String accessToken);
 }
